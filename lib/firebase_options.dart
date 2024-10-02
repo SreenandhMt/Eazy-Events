@@ -58,7 +58,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyCFHeTwf3uZJInt9GEEdZy2R91AETrF8n4',
-    appId: '1:142325051586:android:64fe940dd7e2cdefbc4b5b',
+    appId: '1:142325051586:android:9c5715d0adc8ed46bc4b5b',
     messagingSenderId: '142325051586',
     projectId: 'shout-60c7f',
     storageBucket: 'shout-60c7f.appspot.com',
@@ -72,4 +72,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'shout-60c7f.appspot.com',
     iosBundleId: 'com.example.eventManager',
   );
+
 }
