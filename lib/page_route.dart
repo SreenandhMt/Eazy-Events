@@ -26,11 +26,15 @@ class PageRouteGoRouter {
       builder: (BuildContext context, GoRouterState state) {
         return const AuthRoute();
       },
+      redirect: (context, state) {
+        if (!isAuth) return "/auth";
+        return "/";
+      },
     ),
   ],
   redirect: (context, state) {
-        if (!isAuth) return "/auth";
-        return "/";
+        // if (!isAuth) return "/auth";
+        return state.path;
       },
     );
   }

@@ -1,10 +1,11 @@
+import 'package:event_manager/core/colors.dart';
 import 'package:event_manager/core/size.dart';
 import 'package:event_manager/utils/appbar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:sticky_headers/sticky_headers/widget.dart';
 
+import '../../components/event_details/register_button.dart';
 import '../view_models/event_view_model.dart';
 
 final _key = GlobalKey();
@@ -49,7 +50,7 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
     return Scaffold(
       body: ListView(
         children: [
-          customAppBar(),
+          customAppBar(screenSize),
           Container(
             margin: EdgeInsets.all(20),
             width: double.infinity,height: 400,decoration: BoxDecoration(
@@ -62,7 +63,6 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
             children: [
               LimitedBox(
                 maxWidth: (screenSize.width/2),
-                // maxHeight: screenSize.width*0.5,
                 child: Column(
                   key: _key,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -77,7 +77,7 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
                     Container(
                       margin: const EdgeInsets.only(left: 20,right: 20,top: 10,bottom: 10),
                       padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(color: Colors.grey.shade200,borderRadius: BorderRadius.circular(15)),
+                      decoration: BoxDecoration(color: AppColor.secondaryColor(context),borderRadius: BorderRadius.circular(15)),
                       child: Row(
                       // mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
@@ -89,12 +89,12 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
                     ],),),
                     //title
                     Text("Select date and time",style: GoogleFonts.fredoka(fontSize: 24,fontWeight: FontWeight.bold)),
-                    Container(width: double.infinity,height: 180,padding: const EdgeInsets.all(10),margin: const EdgeInsets.only(left: 20,right: 20,top: 10,bottom: 10),decoration: BoxDecoration(borderRadius: BorderRadius.circular(15),color: Colors.grey.shade300),child: Column(
+                    Container(width: double.infinity,height: 180,padding: const EdgeInsets.all(10),margin: const EdgeInsets.only(left: 20,right: 20,top: 10,bottom: 10),decoration: BoxDecoration(borderRadius: BorderRadius.circular(15),color:  AppColor.secondaryColor(context)),child: Column(
                       children: [
                         Text("22-4-2024 to 1-5-2024",style: GoogleFonts.fredoka()),
                         LimitedBox(maxWidth: double.infinity,maxHeight: 140,child: ListView(
                           scrollDirection: Axis.horizontal,
-                          children: List.generate(10, (index) => Container(width:100,height: double.infinity,margin: const EdgeInsets.all(10),decoration: BoxDecoration(color: Colors.grey.shade200,borderRadius: BorderRadius.circular(8)),child: const Column(
+                          children: List.generate(10, (index) => Container(width:100,height: double.infinity,margin: const EdgeInsets.all(10),decoration: BoxDecoration(color: AppColor.tertiaryColor(context),borderRadius: BorderRadius.circular(8)),child: const Column(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
                               Text("October"),
@@ -126,51 +126,6 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
         ],
       ),
     );
-  }
-}
-
-class RegisterButton extends StatefulWidget {
-  const RegisterButton({
-    Key? key,
-    required this.height,
-  }) : super(key: key);
-  final double height;
-
-  @override
-  State<RegisterButton> createState() => _RegisterButtonState();
-}
-
-class _RegisterButtonState extends State<RegisterButton> {
-  @override
-  Widget build(BuildContext context) {
-    return StickyHeader(
-        header: Container(
-          margin: const EdgeInsets.all(10),
-          alignment: Alignment.topCenter,
-          decoration: BoxDecoration(color: Colors.grey.shade300,borderRadius: BorderRadius.circular(10)),
-          padding: const EdgeInsets.all(5),
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: Text("Rs.500",style: GoogleFonts.fredoka(fontSize: 16)),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: MaterialButton(onPressed: (){},minWidth: double.infinity,height: 50,padding: EdgeInsets.all(10),color: Colors.deepOrange,child: Text("Get Ticket",style: GoogleFonts.aBeeZee(),),),
-                )
-              ],
-            ),
-          ),
-        ),
-        content: Container(
-          alignment: Alignment.topCenter,
-          height: widget.height,
-          // color: Colors.black,
-        ),
-      );
   }
 }
 

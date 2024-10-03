@@ -1,4 +1,5 @@
 import 'package:event_manager/auth/views/auth_route.dart';
+import 'package:event_manager/core/theme.dart';
 import 'package:event_manager/event_details/view_models/event_view_model.dart';
 import 'package:event_manager/firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -37,10 +38,8 @@ class MyApp extends StatelessWidget {
             builder: (context, snapshot) {
               return MaterialApp.router(
                 title: 'Book Event',
-                theme: ThemeData(
-                  colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-                  useMaterial3: true,
-                ),
+                darkTheme: AppTheme.darkTheme,
+                theme: AppTheme.lightTheme,
                 routerConfig: PageRouteGoRouter.goRouter(snapshot.hasData),
               );
             }
