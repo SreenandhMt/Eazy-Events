@@ -33,10 +33,12 @@ class AppTheme {
       filled: true,
       fillColor: Colors.grey.shade700,
       hintStyle: GoogleFonts.nunito(),
+      border: OutlineInputBorder(borderSide: BorderSide(color: Colors.black,width: 0.5)),
     ),);
 
   static final lightTheme = ThemeData(
-    colorScheme: ColorScheme.dark(brightness: Brightness.dark,secondary: Colors.grey.shade300,tertiary: Colors.grey.shade300),
+    colorScheme: ColorScheme.dark(brightness: Brightness.light,secondary: Colors.grey.shade300,tertiary: Colors.grey.shade300),
+    brightness: Brightness.light,
     primaryColor: Colors.deepOrange[700],
     scaffoldBackgroundColor: Colors.grey.shade100,
     appBarTheme: AppBarTheme(backgroundColor: Colors.grey.shade100,elevation: 0,actionsIconTheme:  IconThemeData(
@@ -51,7 +53,6 @@ class AppTheme {
       buttonColor: Colors.deepOrange[700],
       disabledColor: Colors.grey,
     ),
-
     textTheme: TextTheme(
       headlineLarge: GoogleFonts.nunito(color: Colors.black),
       headlineMedium: GoogleFonts.nunito(color: Colors.black87),
@@ -77,6 +78,7 @@ class AppTheme {
       iconColor: Colors.black54,
       prefixIconColor: Colors.black54,
       suffixIconColor: Colors.black54,
+      border: OutlineInputBorder(borderSide: BorderSide(color: Colors.black,width: 0.5)),
       hintStyle: GoogleFonts.nunito(color: Colors.black54),
     ),);
 }

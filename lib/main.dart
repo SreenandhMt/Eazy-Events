@@ -1,7 +1,10 @@
 import 'package:event_manager/auth/views/auth_route.dart';
 import 'package:event_manager/core/theme.dart';
+import 'package:event_manager/dashboard/view_models/dashboard_view_model.dart';
 import 'package:event_manager/event_details/view_models/event_view_model.dart';
+import 'package:event_manager/event_list/view_model/view_model.dart';
 import 'package:event_manager/firebase_options.dart';
+import 'package:event_manager/tickets/view_model/ticket_view_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -31,6 +34,9 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider<HomeViewModel>(create: (context)=> HomeViewModel()),
           ChangeNotifierProvider<EventViewModel>(create: (context)=> EventViewModel()),
           ChangeNotifierProvider<AuthViewModel>(create: (context)=> AuthViewModel()),
+          ChangeNotifierProvider<DashboardViewModel>(create: (context) => DashboardViewModel(),),
+          ChangeNotifierProvider<TicketViewModel>(create: (context) => TicketViewModel(),),
+          ChangeNotifierProvider<ListEventViewModel>(create: (context) => ListEventViewModel(),)
         ],
         builder: (context,_) {
           return StreamBuilder(

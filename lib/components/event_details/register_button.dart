@@ -2,15 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sticky_headers/sticky_headers/widget.dart';
 
+import 'package:event_manager/components/event_details/ticket_register.dart';
+
 import '../../core/colors.dart';
+import '../../event_details/views/event_details.dart';
 
 class RegisterButton extends StatefulWidget {
   const RegisterButton({
-    super.key,
+    Key? key,
     required this.height,
-  });
+    required this.fee,
+    required this.eventID,
+    required this.createrID,
+    required this.stock,
+  }) : super(key: key);
   final double height;
-
+  final String fee;
+  final String eventID;
+  final String createrID;
+  final String stock;
   @override
   State<RegisterButton> createState() => _RegisterButtonState();
 }
@@ -30,11 +40,14 @@ class _RegisterButtonState extends State<RegisterButton> {
               children: [
                 Padding(
                   padding: const EdgeInsets.all(10),
-                  child: Text("Rs.500",style: GoogleFonts.fredoka(fontSize: 16)),
+                  child: Text(int.parse(widget.stock)<=0?"No Stock":widget.fee=="0"?"Free":"Rs.${widget.fee}",style: GoogleFonts.fredoka(fontSize: 16)),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(10),
-                  child: MaterialButton(onPressed: (){},minWidth: double.infinity,height: 50,padding: const EdgeInsets.all(10),color: AppColor.primaryColor,child: Text("Get Ticket",style: GoogleFonts.aBeeZee(),),),
+                  child: MaterialButton(onPressed: (){
+                    if(int.parse(widget.stock)<=0)return;
+                    showDialog(context: context, builder: (context) => Dialog(child: CheckoutPage(eventID: widget.eventID,stock: widget.stock,createrID: widget.createrID),),);
+                  },minWidth: double.infinity,height: 50,padding: const EdgeInsets.all(10),color: AppColor.primaryColor,child: Text("Get Ticket",style: GoogleFonts.aBeeZee(),),),
                 )
               ],
             ),

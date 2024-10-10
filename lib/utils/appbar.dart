@@ -1,15 +1,19 @@
 import 'package:event_manager/auth/view_models/auth_view_model.dart';
+import 'package:event_manager/event_list/view_model/view_model.dart';
+import 'package:event_manager/utils/navigation_utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import 'package:event_manager/core/size.dart';
-import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../components/appbar_actions.dart';
 import '../components/appbar_logo.dart';
 
-PreferredSizeWidget customAppBar(Size size){
+String? SearchQuery;
+
+PreferredSizeWidget customAppBar(Size size,BuildContext context){
+  //mobile view
   if(size.width<871.0)
   {
      return AppBar(
@@ -27,7 +31,28 @@ PreferredSizeWidget customAppBar(Size size){
               {
                 return const AuthButton();
               }
-              return IconButton(onPressed: () {},icon: const Icon(Icons.account_circle_outlined));
+              return AppBarProfilePopUpButton(
+                  moreButton1: PopupMenuItem(
+                      onTap: () {},
+                      child: const Row(
+                        children: [
+                          Icon(Icons.favorite),
+                          width10,
+                          Text("Favorite"),
+                        ],
+                      )),
+                  moreButton2: PopupMenuItem(
+                      onTap: () {
+                        AppNavigation.ticketPage(context);
+                      },
+                      child: const Row(
+                        children: [
+                          Icon(Icons.airplane_ticket_outlined),
+                          width10,
+                          Text("Ticket"),
+                        ],
+                      )),
+                  child: const Icon(Icons.account_circle_outlined));
             }
           )
         ],
@@ -84,6 +109,7 @@ PreferredSizeWidget customAppBar(Size size){
             ),),
       );
   }
+  //tablet view
   if(size.width<1193.0)
   {
     return AppBar(
@@ -153,12 +179,34 @@ PreferredSizeWidget customAppBar(Size size){
               {
                 return const AuthButton();
               }
-              return const Icon(Icons.account_circle_outlined);
+              return AppBarProfilePopUpButton(
+                  moreButton1: PopupMenuItem(
+                      onTap: () {},
+                      child: const Row(
+                        children: [
+                          Icon(Icons.favorite),
+                          width10,
+                          Text("Favorite"),
+                        ],
+                      )),
+                  moreButton2: PopupMenuItem(
+                      onTap: () {
+                        AppNavigation.ticketPage(context);
+                      },
+                      child: const Row(
+                        children: [
+                          Icon(Icons.airplane_ticket_outlined),
+                          width10,
+                          Text("Ticket"),
+                        ],
+                      )),
+                  child: const Icon(Icons.account_circle_outlined));
             }
           )
         ],
       );
   }
+  //desktop view
   return AppBar(
         elevation: 1,
         title: Row(
@@ -176,12 +224,22 @@ PreferredSizeWidget customAppBar(Size size){
                   Expanded(
                     child: TextField(
                       cursorColor: Colors.green,
+                      onChanged: (value) => SearchQuery=value,
+                      onSubmitted: (value) {
+                        if(SearchQuery==null)return;
+                      context.read<ListEventViewModel>().searchItem(SearchQuery!);
+                      AppNavigation.showSearchScreen(context, SearchQuery!);
+                      },
                       decoration: InputDecoration(
                         prefixIcon: IconButton(
                           padding: const EdgeInsets.only(left: 20,right: 10),
                           iconSize: 20,
                     icon: const Icon(Icons.search),
-                    onPressed: () {},
+                    onPressed: () {
+                      if(SearchQuery==null)return;
+                      context.read<ListEventViewModel>().searchItem(SearchQuery!);
+                      AppNavigation.showSearchScreen(context, SearchQuery!);
+                    },
                   ),
                         hintText: "Search events",
                         border: const OutlineInputBorder(borderSide: BorderSide.none,borderRadius: BorderRadius.only(topLeft: Radius.circular(28),bottomLeft: Radius.circular(28))),
@@ -234,7 +292,7 @@ class AuthButton extends StatelessWidget {
         TextButton(
             onPressed: () {
               context.read<AuthViewModel>().setPage(true);
-              context.go("/auth");
+              AppNavigation.authPage(context);
             },
             child: const Text(
               "Log In",
@@ -244,7 +302,7 @@ class AuthButton extends StatelessWidget {
           TextButton(
             onPressed: () {
               context.read<AuthViewModel>().setPage(false);
-              context.go("/auth");
+              AppNavigation.authPage(context);
             },
             child: const Text(
               "Sign Up",
