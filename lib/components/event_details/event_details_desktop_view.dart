@@ -170,6 +170,7 @@ class _EventDetailsDesktopViewState extends State<EventDetailsDesktopView> {
                 eventID: eventViewModel.eventModel!.id,
                 createrID: eventViewModel.eventModel!.createrid,
                 stock:eventViewModel.eventModel!.stock,
+                eventModel: eventViewModel.eventModel!,
               ),
             )
           ],

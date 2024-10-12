@@ -1,44 +1,46 @@
-import 'package:event_manager/core/size.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:event_manager/core/colors.dart';
-import 'package:event_manager/event_list/view_model/view_model.dart';
+import 'package:event_manager/core/size.dart';
+import 'package:event_manager/search/view_model/search_view_model.dart';
 import 'package:event_manager/utils/appbar.dart';
 
 import '../../event_details/view_models/event_view_model.dart';
 import '../../utils/navigation_utils.dart';
 
-class EventListPage extends StatefulWidget {
-  const EventListPage({
+class SearchPage extends StatefulWidget {
+  const SearchPage({
     Key? key,
     this.type,
+    this.search,
   }) : super(key: key);
   final String? type;
+  final String? search;
 
 
   @override
-  State<EventListPage> createState() => _EventListPageState();
+  State<SearchPage> createState() => _SearchPageState();
 }
 
-class _EventListPageState extends State<EventListPage> {
+class _SearchPageState extends State<SearchPage> {
   @override
   void initState() {
-    if(widget.type!=null)
+    if(widget.search!=null)
     {
-      context.read<ListEventViewModel>().getTypeEvent(widget.type!);
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) => context.read<SearchViewModel>().searchItem(widget.search!));
     }
     super.initState();
   }
   @override
   Widget build(BuildContext context) {
     Size screenSize = MediaQuery.of(context).size;
-    ListEventViewModel viewModel = context.watch<ListEventViewModel>();
+    SearchViewModel viewModel = context.watch<SearchViewModel>();
     if(viewModel.loading)
     {
       return Center(child: CircularProgressIndicator(color: Colors.red,),);
     }
-    if(viewModel.eventList.isNotEmpty)
+    if(viewModel.eventList.isEmpty)
     {
       return Center(child: CircularProgressIndicator(color: Colors.red,),);
     }

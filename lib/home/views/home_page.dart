@@ -22,17 +22,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<String> eventType = [
-    "Music",
-    "Nightlife",
-    "Art",
-    "Dating",
-    "Gaming",
-    "Business",
-    "Study",
-    "Food and Drink",
-    "Sports"
-  ];
   @override
   Widget build(BuildContext context) {
     Size screenSize = MediaQuery.of(context).size;
@@ -52,7 +41,7 @@ class _HomePageState extends State<HomePage> {
             children: List.generate(9, (index) => Padding(
               padding: const EdgeInsets.all(8.0),
               child: GestureDetector(onTap: (){
-                AppNavigation.showEventCategoryList(context,eventType[index]);
+                AppNavigation.showEventCategoryList(context,index.toString());
               },child: CircleAvatar(radius: 53,backgroundColor: Colors.grey.shade400,child: CircleAvatar(radius: 50,backgroundColor: AppColor.secondaryColor(context),child: Image.asset(ImageAssets.categoryImage(index+1,isDarkTheme(context)),width: 40),),)),
             ),),
           ))
@@ -61,7 +50,7 @@ class _HomePageState extends State<HomePage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: List.generate(9, (index) => Padding(
               padding: const EdgeInsets.all(8.0),
-              child: GestureDetector(onTap: () => AppNavigation.showEventCategoryList(context,eventType[index]),child: CircleAvatar(radius: 53,backgroundColor: Colors.grey.shade400,child: CircleAvatar(radius: 50,backgroundColor: AppColor.secondaryColor(context),child: Image.asset(ImageAssets.categoryImage(index+1,isDarkTheme(context)),width: 40),),)),
+              child: GestureDetector(onTap: () => AppNavigation.showEventCategoryList(context,index.toString()),child: CircleAvatar(radius: 53,backgroundColor: Colors.grey.shade400,child: CircleAvatar(radius: 50,backgroundColor: AppColor.secondaryColor(context),child: Image.asset(ImageAssets.categoryImage(index+1,isDarkTheme(context)),width: 40),),)),
             ),),
           )
           ,

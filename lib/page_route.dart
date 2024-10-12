@@ -1,11 +1,13 @@
 import 'package:event_manager/auth/views/auth_route.dart';
+import 'package:event_manager/category_list/views/category_list_page.dart';
 import 'package:event_manager/dashboard/views/dashboard_page.dart';
 import 'package:event_manager/event_details/views/event_details.dart';
-import 'package:event_manager/event_list/views/event_list.dart';
+import 'package:event_manager/search/views/event_list.dart';
 import 'package:event_manager/home/views/home_page.dart';
 import 'package:event_manager/tickets/views/ticket_page.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+
 
 class PageRouteGoRouter {
   static GoRouter goRouter(isAuth){
@@ -21,7 +23,7 @@ class PageRouteGoRouter {
     GoRoute(
       path: '/dash',
       builder: (BuildContext context, GoRouterState state) {
-        return DashboardPage();
+        return const DashboardPage();
       },
     ),
     GoRoute(
@@ -33,7 +35,7 @@ class PageRouteGoRouter {
     GoRoute(
       path: '/tickets',
       builder: (BuildContext context, GoRouterState state) {
-        return TicketPage();
+        return const TicketPage();
       },
     ),
     GoRoute(
@@ -43,15 +45,15 @@ class PageRouteGoRouter {
       },
     ),
     GoRoute(
-      path: '/event/type/:type',
+      path: '/event/category/:index',
       builder: (BuildContext context, GoRouterState state) {
-        return EventListPage(type:state.pathParameters["type"]??"",);
+        return CategoryListPage(typeIndex:state.pathParameters["index"]??"",);
       },
     ),
     GoRoute(
       path: '/event/search/:search',
       builder: (BuildContext context, GoRouterState state) {
-        return EventListPage();
+        return SearchPage(search: state.pathParameters["search"]??"",);
       },
     ),
     GoRoute(

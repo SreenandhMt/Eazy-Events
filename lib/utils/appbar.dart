@@ -1,5 +1,5 @@
 import 'package:event_manager/auth/view_models/auth_view_model.dart';
-import 'package:event_manager/event_list/view_model/view_model.dart';
+import 'package:event_manager/search/view_model/search_view_model.dart';
 import 'package:event_manager/utils/navigation_utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -227,7 +227,6 @@ PreferredSizeWidget customAppBar(Size size,BuildContext context){
                       onChanged: (value) => SearchQuery=value,
                       onSubmitted: (value) {
                         if(SearchQuery==null)return;
-                      context.read<ListEventViewModel>().searchItem(SearchQuery!);
                       AppNavigation.showSearchScreen(context, SearchQuery!);
                       },
                       decoration: InputDecoration(
@@ -237,7 +236,6 @@ PreferredSizeWidget customAppBar(Size size,BuildContext context){
                     icon: const Icon(Icons.search),
                     onPressed: () {
                       if(SearchQuery==null)return;
-                      context.read<ListEventViewModel>().searchItem(SearchQuery!);
                       AppNavigation.showSearchScreen(context, SearchQuery!);
                     },
                   ),

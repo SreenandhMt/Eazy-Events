@@ -1,9 +1,10 @@
-import 'package:event_manager/event_list/repo/event_list_service.dart';
+import 'package:event_manager/category_list/repo/category_service.dart';
+import 'package:event_manager/search/repo/search_service.dart';
 import 'package:flutter/material.dart';
 
 import '../../home/models/event_model.dart';
 
-class ListEventViewModel extends ChangeNotifier {
+class CategoryViewModels extends ChangeNotifier {
   List<EventModel> _eventList = [];
   bool _loading = false;
 
@@ -24,7 +25,7 @@ class ListEventViewModel extends ChangeNotifier {
   getTypeEvent(String type)async
   {
     setLoading(true);
-    final responce = await EventListService.getType(type);
+    final responce = await CategoryService.getType(type);
     if(responce is List<EventModel>)
     {
       setEventModel(responce);
@@ -32,14 +33,4 @@ class ListEventViewModel extends ChangeNotifier {
     setLoading(false);
   }
   
-  searchItem(String text)async
-  {
-    setLoading(true);
-    final responce = await EventListService.getSearch(text);
-    if(responce is List<EventModel>)
-    {
-      setEventModel(responce);
-    }
-    setLoading(false);
-  }
 }

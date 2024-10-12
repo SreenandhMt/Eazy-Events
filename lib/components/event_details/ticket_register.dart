@@ -1,24 +1,23 @@
+import 'package:event_manager/dashboard/models/ticket_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:event_manager/core/colors.dart';
 import 'package:event_manager/event_details/view_models/event_view_model.dart';
+import 'package:event_manager/home/models/event_model.dart';
 
 import '../../core/size.dart';
+import '../../utils/navigation_utils.dart';
 
 FirebaseAuth _auth = FirebaseAuth.instance;
 
 class CheckoutPage extends StatefulWidget {
   const CheckoutPage({
-    Key? key,
-    required this.eventID,
-    required this.createrID,
-    required this.stock,
-  }) : super(key: key);
-  final String eventID;
-  final String createrID;
-  final String stock;
+    super.key,
+    required this.eventModel,
+  });
+  final EventModel eventModel;
 
   @override
   _CheckoutPageState createState() => _CheckoutPageState();
@@ -156,8 +155,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
               ElevatedButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
-                    context.read<EventViewModel>().createTicket(eventID: widget.eventID,stock: widget.stock,phoneNumber:_number.text,name: "${_name.text} ${_lastName.text}",createrID: widget.createrID);
-                    Navigator.pop(context);
+                    AppNavigation.paymentSreen(context, widget.eventModel.id,widget.eventModel.fee,widget.eventModel.title,widget.eventModel.subtitle,widget.eventModel.poster,stock: widget.eventModel.stock,ticketModel: TicketModel(userName: "${_name.text} ${_lastName.text}", userProfile: "", userNumber: _number.text, eventID: widget.eventModel.id, email: _email.text, uid: "", ticketID: "", createrID: widget.eventModel.createrid));
+                    
                   }
                 },
                 child: const Text('Register',style: TextStyle(color: Colors.white),),

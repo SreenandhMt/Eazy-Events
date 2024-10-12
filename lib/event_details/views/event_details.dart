@@ -1,7 +1,6 @@
 import 'package:event_manager/components/event_details/event_details_desktop_view.dart';
 import 'package:event_manager/components/event_details/event_details_mobile_view.dart';
 import 'package:event_manager/components/event_details/ticket_register.dart';
-import 'package:event_manager/core/size.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -53,12 +52,12 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
     }
     if(eventViewModel.eventModel==null)
     {
-      eventViewModel.reLoadData(widget.eventID);
+      context.read<EventViewModel>().reLoadData(widget.eventID);
       return const SizedBox();
     }
     if(eventViewModel.userModel==null)
     {
-      context.read<EventViewModel>().getUser(eventViewModel.eventModel!.createrid);
+       WidgetsBinding.instance.addPostFrameCallback((timeStamp) =>context.read<EventViewModel>().getUser(eventViewModel.eventModel!.createrid));
       return const Center(child: CircularProgressIndicator(color: Colors.red,));
     }
     return Scaffold(
@@ -102,7 +101,7 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
                   padding: const EdgeInsets.all(10),
                   child: MaterialButton(onPressed: (){
                     if(int.parse(eventViewModel.eventModel!.stock)<=0)return;
-                    showDialog(context: context, builder: (context) => Dialog(child: CheckoutPage(eventID: eventViewModel.eventModel!.id,stock: eventViewModel.eventModel!.stock,createrID: eventViewModel.eventModel!.createrid,),),);
+                    showDialog(context: context, builder: (context) => Dialog(child: CheckoutPage(eventModel: eventViewModel.eventModel!),),);
                   },minWidth: double.infinity,height: 50,padding: const EdgeInsets.all(10),color: AppColor.primaryColor,child: Text("Get Ticket",style: GoogleFonts.aBeeZee(),),),
                 )
               ],
