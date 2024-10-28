@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe_web/flutter_stripe_web.dart';
 import 'package:go_router/go_router.dart';
@@ -12,14 +13,14 @@ import '../../dashboard/models/ticket_model.dart';
 
 class PaymentScreen extends StatefulWidget {
   const PaymentScreen({
-    Key? key,
+    super.key,
     required this.amount,
     required this.imageurl,
     required this.title,
     required this.subtitle,
     required this.stock,
     required this.ticketModel,
-  }) : super(key: key);
+  });
   final String amount;
   final String imageurl;
   final String title;
@@ -28,10 +29,10 @@ class PaymentScreen extends StatefulWidget {
   final TicketModel ticketModel;
 
   @override
-  _PaymentScreenState createState() => _PaymentScreenState();
+  PaymentScreenState createState() => PaymentScreenState();
 }
 
-class _PaymentScreenState extends State<PaymentScreen> {
+class PaymentScreenState extends State<PaymentScreen> {
 
   @override
   void initState() {
@@ -41,13 +42,13 @@ class _PaymentScreenState extends State<PaymentScreen> {
   @override
   Widget build(BuildContext context) {
     Size screenSize = MediaQuery.of(context).size;
-    PaymentViewModel _paymentViewModel = context.watch<PaymentViewModel>();
-    if(_paymentViewModel.successPayment!=null)
+    PaymentViewModel paymentViewModel = context.watch<PaymentViewModel>();
+    if(paymentViewModel.successPayment!=null)
     {
-      _paymentViewModel.setPaymentStatus(null, null);
+      paymentViewModel.setPaymentStatus(null, null);
       context.pop();
     }
-    if(_paymentViewModel.loading)
+    if(paymentViewModel.loading)
     {
       return const Center(child: CircularProgressIndicator(color: Colors.red,));
     }
@@ -77,14 +78,14 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
 class PaymentDesktopView extends StatefulWidget {
   const PaymentDesktopView({
-    Key? key,
+    super.key,
     required this.amount,
     required this.imageurl,
     required this.title,
     required this.subtitle,
     required this.stock,
     required this.ticketModel
-  }) : super(key: key);
+  });
   final String amount;
   final String imageurl;
   final String title;
@@ -100,7 +101,7 @@ class _PaymentDesktopViewState extends State<PaymentDesktopView> {
   @override
   Widget build(BuildContext context) {
     Size screenSize = MediaQuery.of(context).size;
-    PaymentViewModel _paymentViewModel = context.watch<PaymentViewModel>();
+    PaymentViewModel paymentViewModel = context.watch<PaymentViewModel>();
     return Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -130,10 +131,15 @@ class _PaymentDesktopViewState extends State<PaymentDesktopView> {
               decoration: BoxDecoration(
                 color: Colors.black,
                 borderRadius: BorderRadius.circular(10),
-                image: DecorationImage(
-                  image: NetworkImage(widget.imageurl),
-                  fit: BoxFit.cover,
+              ),
+              child: CachedNetworkImage(
+                progressIndicatorBuilder: (context, url, progress) => Center(
+                  child: CircularProgressIndicator(
+                    value: progress.progress,
+                  ),
                 ),
+                imageUrl:
+                    widget.imageurl,
               ),
             ),
             const Spacer(),
@@ -141,17 +147,17 @@ class _PaymentDesktopViewState extends State<PaymentDesktopView> {
           ],
         ),),
         width35,
-          Container(height: double.infinity,width: (screenSize.width/2)*0.5,color: Colors.white,child: _paymentViewModel.clientSecret == null
+          Container(height: double.infinity,width: (screenSize.width/2)*0.5,color: Colors.white,child: paymentViewModel.clientSecret == null
                 ? const CircularProgressIndicator()
                 : Column(
          mainAxisAlignment: MainAxisAlignment.center,
          crossAxisAlignment: CrossAxisAlignment.center,
          children: [
-           PlatformPaymentElement(clientSecret: _paymentViewModel.clientSecret),
+           PlatformPaymentElement(clientSecret: paymentViewModel.clientSecret),
            const SizedBox(height: 20),
            MaterialButton(onPressed: () {
              context.read<PaymentViewModel>().pay(context,stock: widget.stock,createrID: widget.ticketModel.createrID,eventID: widget.ticketModel.eventID,phoneNumber: widget.ticketModel.userNumber,name: widget.ticketModel.userName);
-           },color: AppColor.primaryColor,child: SizedBox(width: double.infinity,height: 55,child: _paymentViewModel.paymentLoading?const Center(child: CircularProgressIndicator(color: Colors.green,)):const Center(child: Text("Pay",style: TextStyle(color: Colors.black),)),),)
+           },color: AppColor.primaryColor,child: SizedBox(width: double.infinity,height: 55,child: paymentViewModel.paymentLoading?const Center(child: CircularProgressIndicator(color: Colors.green,)):const Center(child: Text("Pay",style: TextStyle(color: Colors.black),)),),)
          ],
        ),),
        const SizedBox(),
@@ -184,7 +190,7 @@ class PaymentMobileView extends StatefulWidget {
 class _PaymentMobileViewState extends State<PaymentMobileView> {
   @override
   Widget build(BuildContext context) {
-    PaymentViewModel _paymentViewModel = context.watch<PaymentViewModel>();
+    PaymentViewModel paymentViewModel = context.watch<PaymentViewModel>();
     return ListView(
         padding: const EdgeInsets.only(left:20,right: 20,top: 10),
         children: [
@@ -214,17 +220,17 @@ class _PaymentMobileViewState extends State<PaymentMobileView> {
               ),
             ), 
             const SizedBox(height: 30),
-            _paymentViewModel.clientSecret == null
+            paymentViewModel.clientSecret == null
                 ? const CircularProgressIndicator()
                 : Column(
          mainAxisAlignment: MainAxisAlignment.center,
          crossAxisAlignment: CrossAxisAlignment.center,
          children: [
-           PlatformPaymentElement(clientSecret: _paymentViewModel.clientSecret),
+           PlatformPaymentElement(clientSecret: paymentViewModel.clientSecret),
            const SizedBox(height: 20),
            MaterialButton(onPressed: () {
              context.read<PaymentViewModel>().pay(context,stock: widget.stock,createrID: widget.ticketModel.createrID,eventID: widget.ticketModel.eventID,phoneNumber: widget.ticketModel.userNumber,name: widget.ticketModel.userName);
-           },color: AppColor.primaryColor,child: SizedBox(width: double.infinity,height: 40,child: _paymentViewModel.paymentLoading?const Center(child: CircularProgressIndicator(color: Colors.green,)):const Center(child: Text("Pay",style: TextStyle(color: Colors.black),)),),),
+           },color: AppColor.primaryColor,child: SizedBox(width: double.infinity,height: 40,child: paymentViewModel.paymentLoading?const Center(child: CircularProgressIndicator(color: Colors.green,)):const Center(child: Text("Pay",style: TextStyle(color: Colors.black),)),),),
            height15,
          ],
        ),]);

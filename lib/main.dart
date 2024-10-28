@@ -9,6 +9,7 @@ import 'package:event_manager/tickets/view_model/ticket_view_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:provider/provider.dart';
 import 'package:toastification/toastification.dart';
@@ -22,7 +23,8 @@ Future<void> main() async{
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  Stripe.publishableKey = 'pk_test_51PhnltKfAbZCIGAyMIANyBlpFLqnqTVe7GVe3mAEantqP8pRNRibBueekUGuJXOkUdcH8R7dGzsMmdjoWDSS4wWm005dEbUMnE';
+  await dotenv.load(fileName: ".env");
+  Stripe.publishableKey = dotenv.get("PAYMENT_API_PUBLISHABLE_KEY");
   runApp(const MyApp());
 }
 

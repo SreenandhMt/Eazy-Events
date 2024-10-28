@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:event_manager/auth/models/auth_model.dart';
 import 'package:event_manager/auth/repo/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';

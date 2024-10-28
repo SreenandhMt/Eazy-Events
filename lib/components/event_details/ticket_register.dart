@@ -20,7 +20,7 @@ class CheckoutPage extends StatefulWidget {
   final EventModel eventModel;
 
   @override
-  _CheckoutPageState createState() => _CheckoutPageState();
+  State<CheckoutPage> createState() => _CheckoutPageState();
 }
 
 class _CheckoutPageState extends State<CheckoutPage> {
@@ -28,7 +28,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
   bool isEventUpdatesChecked = true;
   bool isBestEventsChecked = true;
   String oldValue = '';
-  TextEditingController _email = TextEditingController(text: _auth.currentUser==null?"":_auth.currentUser!.email),_number = TextEditingController(),_name = TextEditingController(),_lastName = TextEditingController();
+  TextEditingController email = TextEditingController(text: _auth.currentUser==null?"":_auth.currentUser!.email),number = TextEditingController(),name = TextEditingController(text: _auth.currentUser!.displayName!=null?_auth.currentUser!.displayName!.split(" ").first:""),lastName = TextEditingController(text:  _auth.currentUser!.displayName!=null?_auth.currentUser!.displayName!.split(" ").last:"");
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +57,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                       LimitedBox(
                         maxWidth: screenSize.width>=800?275:(screenSize.width/2)*0.6,
                         child: TextFormField(
-                        controller: _name,
+                        controller: name,
                         decoration: const InputDecoration(
                           labelText: "First Name",
                           fillColor: Colors.transparent,
@@ -75,7 +75,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     LimitedBox(
                       maxWidth: screenSize.width>=800?275:(screenSize.width/2)*0.6,
                       child: TextFormField(
-                        controller: _lastName,
+                        controller: lastName,
                         decoration: const InputDecoration(
                           labelText: "Last Name",
                           fillColor: Colors.transparent,
@@ -92,7 +92,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     ],),
                     height30,
                     TextFormField(
-                      controller: _email,
+                      controller: email,
                       decoration: const InputDecoration(
                         labelText: "Email Address",
                         fillColor: Colors.transparent,
@@ -107,7 +107,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     ),
                     height30,
                     TextFormField(
-                      controller: _number,
+                      controller: number,
                       decoration: const InputDecoration(
                         labelText: "Phone Number",
                         fillColor: Colors.transparent,
@@ -117,7 +117,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                         if(value.isEmpty)return;
                         if(int.tryParse(value)==null)
                         {
-                          _number.text = oldValue;
+                          number.text = oldValue;
                         }else{
                           oldValue = value;
                         }
@@ -155,16 +155,22 @@ class _CheckoutPageState extends State<CheckoutPage> {
               ElevatedButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
-                    AppNavigation.paymentSreen(context, widget.eventModel.id,widget.eventModel.fee,widget.eventModel.title,widget.eventModel.subtitle,widget.eventModel.poster,stock: widget.eventModel.stock,ticketModel: TicketModel(userName: "${_name.text} ${_lastName.text}", userProfile: "", userNumber: _number.text, eventID: widget.eventModel.id, email: _email.text, uid: "", ticketID: "", createrID: widget.eventModel.createrid));
+                    if(widget.eventModel.fee=="0")
+                    {
+                      context.read<EventViewModel>().createTicket(eventID: widget.eventModel.id, stock: widget.eventModel.stock, createrID: widget.eventModel.createrid, phoneNumber: name.text, name: "${name.text} ${lastName.text}");
+                      Navigator.pop(context);
+                      return;
+                    }
+                    AppNavigation.paymentSreen(context, widget.eventModel.id,widget.eventModel.fee,widget.eventModel.title,widget.eventModel.subtitle,widget.eventModel.poster,stock: widget.eventModel.stock,ticketModel: TicketModel(userName: "${name.text} ${lastName.text}", userProfile: "", userNumber: number.text, eventID: widget.eventModel.id, email: email.text, uid: "", ticketID: "", createrID: widget.eventModel.createrid));
                     
                   }
                 },
-                child: const Text('Register',style: TextStyle(color: Colors.white),),
                 style: ElevatedButton.styleFrom(
                   side: const BorderSide(style: BorderStyle.none),
                   backgroundColor: AppColor.primaryColor,
                   minimumSize: const Size(double.infinity, 50),
                 ),
+                child: const Text('Register',style: TextStyle(color: Colors.white),),
               ),
             ],
           ),

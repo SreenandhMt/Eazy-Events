@@ -4,10 +4,6 @@ import 'package:flutter/widgets.dart';
 
 class HomeViewModel extends ChangeNotifier {
 
-  HomeViewModel(){
-    getTop10Event();
-  }
-
   bool _loading = false;
   List<EventModel>? _eventModels;
 

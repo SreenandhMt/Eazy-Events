@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
@@ -7,8 +6,8 @@ import 'package:event_manager/auth/view_models/auth_view_model.dart';
 import 'package:event_manager/auth/views/login.dart';
 import 'package:event_manager/auth/views/signup.dart';
 
-TextEditingController email = TextEditingController();
-  TextEditingController password = TextEditingController();
+TextEditingController email = TextEditingController(text: "sreenand104@gmail.com");
+  TextEditingController password = TextEditingController(text: "12345678");
   TextEditingController conformPassword = TextEditingController();
 
 class AuthRoute extends StatefulWidget {
@@ -34,12 +33,12 @@ class _AuthRouteState extends State<AuthRoute> {
 
 class CustomTextForm extends StatelessWidget {
   const CustomTextForm({
-    Key? key,
+    super.key,
     required this.text,
     required this.width,
     this.controller,
     this.validator,
-  }) : super(key: key);
+  });
   final String text;
   final double? width;
   final TextEditingController? controller;

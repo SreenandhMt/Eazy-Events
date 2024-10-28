@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class AppbarActionsIcons extends StatefulWidget {
   const AppbarActionsIcons({
-    Key? key,
+    super.key,
     required this.icon,
     required this.text,
     required this.onTap,
-  }) : super(key: key);
+  });
   final IconData icon;
   final String text;
   final void Function()? onTap;

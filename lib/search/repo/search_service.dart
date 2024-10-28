@@ -6,19 +6,24 @@ import '../../home/models/event_model.dart';
 FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
 class SearchService {
-  static Future<Object> getSearch(String text)async
+  static Future<List<EventModel>> getData()async
   {
-    List<EventModel> data = [];
     final responce = await _firestore
     .collection('events').get().then((value) => value.docs.map((e) {
       return EventModel.formjson(e.data());
     },).toList());
-    for (var event in responce) {
-      if(event.title.contains(text.toLowerCase())||event.title.contains(text.toUpperCase()))
+    
+    return responce;
+  }
+  static Future<Object> getSearch(String text,List<EventModel> data)async
+  {
+    List<EventModel> result = [];
+    for (var event in data) {
+      if(event.title.contains(text.toUpperCase())||event.title.contains(text.toLowerCase())||event.category.contains(text.toUpperCase()))
       {
-        data.add(event);
+        result.add(event);
       }
     }
-    return data;
+    return result;
   }
 }

@@ -10,9 +10,9 @@ import '../../auth/views/auth_route.dart';
 
 class LoginDesktopView extends StatefulWidget {
   const LoginDesktopView({
-    Key? key,
+    super.key,
     required this.formKey,
-  }) : super(key: key);
+  });
   final GlobalKey<FormState> formKey;
 
   @override

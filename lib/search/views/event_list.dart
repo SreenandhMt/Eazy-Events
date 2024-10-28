@@ -1,3 +1,5 @@
+import 'package:event_manager/utils/empty_screen_message.dart';
+import 'package:event_manager/utils/loading_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -9,13 +11,13 @@ import 'package:event_manager/utils/appbar.dart';
 import '../../event_details/view_models/event_view_model.dart';
 import '../../utils/navigation_utils.dart';
 
+//TODO: make a location to search and improve this search
+
 class SearchPage extends StatefulWidget {
   const SearchPage({
-    Key? key,
-    this.type,
+    super.key,
     this.search,
-  }) : super(key: key);
-  final String? type;
+  });
   final String? search;
 
 
@@ -38,21 +40,13 @@ class _SearchPageState extends State<SearchPage> {
     SearchViewModel viewModel = context.watch<SearchViewModel>();
     if(viewModel.loading)
     {
-      return Center(child: CircularProgressIndicator(color: Colors.red,),);
-    }
-    if(viewModel.eventList.isEmpty)
-    {
-      return Center(child: CircularProgressIndicator(color: Colors.red,),);
+      return const LoadingScreen();
     }
     return Scaffold(
-      appBar:customAppBar(screenSize,context),
-      body: ListView(
+      appBar:customAppBar(screenSize,context,isSearchPage: true),
+      body: viewModel.eventList.isEmpty? const EmptyScreenMessage(text: "Search empty resalt", icon: Icons.search_off_sharp): ListView(
         children: [
           height20,
-          // Padding(
-          //   padding: const EdgeInsets.only(top: 8.0,bottom: 8.0,left: 20),
-          //   child: Text(widget.type!=null?"Study Events":"",style: const TextStyle(fontSize: 25,fontWeight: FontWeight.bold),),
-          // ),
           if(viewModel.eventList.isNotEmpty)
           GridView.builder(
             physics: const NeverScrollableScrollPhysics(),

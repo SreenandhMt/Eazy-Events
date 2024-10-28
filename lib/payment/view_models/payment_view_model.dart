@@ -1,9 +1,10 @@
-import 'package:event_manager/event_details/view_models/event_view_model.dart';
-import 'package:event_manager/payment/models/payment_model.dart';
-import 'package:event_manager/payment/repo/payment_service.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:toastification/toastification.dart';
+
+import '/event_details/view_models/event_view_model.dart';
+import '/payment/models/payment_model.dart';
+import '/payment/repo/payment_service.dart';
 
 class PaymentViewModel extends ChangeNotifier{
   bool _loading = false;

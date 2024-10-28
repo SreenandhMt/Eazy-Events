@@ -1,11 +1,7 @@
 import 'package:event_manager/dashboard/models/ticket_model.dart';
-import 'package:event_manager/dashboard/views/dashboard_page.dart';
-import 'package:event_manager/home/models/event_model.dart';
-import 'package:event_manager/payment/view_models/payment_view_model.dart';
 import 'package:event_manager/payment/views/payment_web.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
 
 class AppNavigation {
   static homePage(BuildContext context){

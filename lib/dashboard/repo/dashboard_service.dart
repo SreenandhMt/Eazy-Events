@@ -30,6 +30,14 @@ class DashboardService {
     }
   }
 
+   static Future<Object> getEventTickets(String eventID)async
+  {
+    List<TicketModel> ticketModel = [];
+     ticketModel = await _firestore.collection("Tickets").where("eventID",isEqualTo: eventID).get().then((event) => event.docs.map((e) => TicketModel.formjson(e.data()),).toList());
+    
+     return ticketModel;
+  }
+
   static Future<Object> createEvents(Map<String,dynamic> event)async
   {
     try {

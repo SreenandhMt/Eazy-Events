@@ -3,10 +3,6 @@ import 'package:event_manager/tickets/repo/ticket_service.dart';
 import 'package:flutter/material.dart';
 
 class TicketViewModel extends ChangeNotifier {
-  // TicketViewModel()
-  // {
-  //   getMyTickets();
-  // }
 
   List<UserTicketModel> _ticketModel = [];
   bool _loading = false;

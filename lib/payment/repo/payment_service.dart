@@ -1,21 +1,22 @@
 import 'dart:convert';
 
 import 'package:event_manager/payment/models/payment_model.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_stripe_web/flutter_stripe_web.dart';
 import 'package:http/http.dart' as http;
 
 class PaymentService {
   static Future<String?> createPaymentIntent(String amount,String currency) async {
     try {
-      final url = Uri.parse('https://api.stripe.com/v1/payment_intents');
+      final url = Uri.parse(dotenv.get("PAYMENT_API_URL"));
       final response = await http.post(
         url,
         headers: {
-          "Authorization": "Bearer sk_test_51PhnltKfAbZCIGAymrPA1Z12Iq9RLsbs8DBIzmCxbepLJFCpw3pqn8LmI1EaijAQw3mG5x4rRr3Cdnrrp94dnpvZ00GE00d0Zq",
+          "Authorization": "Bearer ${dotenv.get("PAYMENT_API_KEY")}",
           "Content-Type": 'application/x-www-form-urlencoded'
         },
         body: {
-          'amount': "$amount",
+          'amount': amount,
           'currency': 'usd',
         },
       );

@@ -1,12 +1,15 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:event_manager/components/event_details/event_details_desktop_view.dart';
 import 'package:event_manager/components/event_details/event_details_mobile_view.dart';
 import 'package:event_manager/components/event_details/ticket_register.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import 'package:event_manager/core/colors.dart';
 import 'package:event_manager/utils/appbar.dart';
+import 'package:toastification/toastification.dart';
 
 import '../view_models/event_view_model.dart';
 
@@ -52,7 +55,8 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
     }
     if(eventViewModel.eventModel==null)
     {
-      context.read<EventViewModel>().reLoadData(widget.eventID);
+      WidgetsBinding.instance.addPostFrameCallback((_) =>context.read<EventViewModel>().reLoadData(widget.eventID));
+      
       return const SizedBox();
     }
     if(eventViewModel.userModel==null)
@@ -101,6 +105,18 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
                   padding: const EdgeInsets.all(10),
                   child: MaterialButton(onPressed: (){
                     if(int.parse(eventViewModel.eventModel!.stock)<=0)return;
+                    if(FirebaseAuth.instance.currentUser==null)
+                    {
+                      toastification.show(
+                              title: Text("You are not logged"),
+                              style: ToastificationStyle.fillColored,
+                              type: ToastificationType.error,
+                              autoCloseDuration: const Duration(seconds: 4),
+                              animationDuration:
+                                  const Duration(milliseconds: 200),
+                            );
+                      return;
+                    }
                     showDialog(context: context, builder: (context) => Dialog(child: CheckoutPage(eventModel: eventViewModel.eventModel!),),);
                   },minWidth: double.infinity,height: 50,padding: const EdgeInsets.all(10),color: AppColor.primaryColor,child: Text("Get Ticket",style: GoogleFonts.aBeeZee(),),),
                 )

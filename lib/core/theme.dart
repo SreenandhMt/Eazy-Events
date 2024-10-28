@@ -7,7 +7,7 @@ class AppTheme {
     colorScheme: ColorScheme.dark(brightness: Brightness.dark,secondary: Colors.grey.shade800,tertiary: Colors.grey.shade700),
     primaryColor: Colors.deepOrange[700],
     scaffoldBackgroundColor: Colors.black,
-    appBarTheme: AppBarTheme(backgroundColor: Colors.black,elevation: 0),
+    appBarTheme: const AppBarTheme(backgroundColor: Colors.black,elevation: 0),
     buttonTheme: ButtonThemeData(
       buttonColor: Colors.deepOrange[700],
       disabledColor: Colors.grey,
@@ -33,7 +33,7 @@ class AppTheme {
       filled: true,
       fillColor: Colors.grey.shade700,
       hintStyle: GoogleFonts.nunito(),
-      border: OutlineInputBorder(borderSide: BorderSide(color: Colors.black,width: 0.5)),
+      border: const OutlineInputBorder(borderSide: BorderSide(color: Colors.black,width: 0.5)),
     ),);
 
   static final lightTheme = ThemeData(
@@ -41,7 +41,7 @@ class AppTheme {
     brightness: Brightness.light,
     primaryColor: Colors.deepOrange[700],
     scaffoldBackgroundColor: Colors.grey.shade100,
-    appBarTheme: AppBarTheme(backgroundColor: Colors.grey.shade100,elevation: 0,actionsIconTheme:  IconThemeData(
+    appBarTheme: AppBarTheme(backgroundColor: Colors.grey.shade100,elevation: 0,actionsIconTheme:  const IconThemeData(
       color: Colors.black87,
     ),
     titleTextStyle: GoogleFonts.nunito(color: Colors.black54),
@@ -68,7 +68,7 @@ class AppTheme {
       color:  Colors.black87,
     ),
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
-      backgroundColor: Color.fromARGB(255, 208, 208, 208),
+      backgroundColor: const Color.fromARGB(255, 208, 208, 208),
       selectedItemColor: Colors.grey.shade300,
       unselectedItemColor: Colors.grey.shade700,
     ),
@@ -78,7 +78,7 @@ class AppTheme {
       iconColor: Colors.black54,
       prefixIconColor: Colors.black54,
       suffixIconColor: Colors.black54,
-      border: OutlineInputBorder(borderSide: BorderSide(color: Colors.black,width: 0.5)),
+      border: const OutlineInputBorder(borderSide: BorderSide(color: Colors.black,width: 0.5)),
       hintStyle: GoogleFonts.nunito(color: Colors.black54),
     ),);
 }

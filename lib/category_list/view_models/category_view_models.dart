@@ -1,5 +1,4 @@
 import 'package:event_manager/category_list/repo/category_service.dart';
-import 'package:event_manager/search/repo/search_service.dart';
 import 'package:flutter/material.dart';
 
 import '../../home/models/event_model.dart';

@@ -1,12 +1,13 @@
-
 import 'dart:developer';
 import 'dart:typed_data';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:event_manager/dashboard/models/ticket_model.dart';
-import 'package:event_manager/dashboard/repo/dashboard_service.dart';
-import 'package:event_manager/event_details/models/user_model.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:event_manager/event_details/repo/event_service.dart';
+import 'package:event_manager/tickets/models/user_ticket_model.dart';
+
+import '/dashboard/models/ticket_model.dart';
+import '/dashboard/repo/dashboard_service.dart';
+import '/event_details/models/user_model.dart';
+
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -16,33 +17,82 @@ import '../../home/models/event_model.dart';
 
 final ImagePicker _picker = ImagePicker();
 FirebaseStorage _storage = FirebaseStorage.instance;
+List<String> eventType = [
+    "Music",
+    "Nightlife",
+    "Art",
+    "Dating",
+    "Gaming",
+    "Business",
+    "Study",
+    "Food and Drink",
+    "Sports"
+  ];
 
 class DashboardViewModel extends ChangeNotifier{
-  DashboardViewModel(){
-    getMyEvents();
-  }
   bool _loading = false;
+  bool _ticketLoading = false;
+  // event filter
   List<EventModel> _myEvents = [];
+  List<EventModel> _outOfStockEvents = [];
+  List<EventModel> _expairedEvents = [];
+  List<EventModel> _selectedEvents = [];
+
+  EventModel? _editEvent;
+
+
+  //category
+  List<List<EventModel>> _categoryFilter = [];
+
+  //event creating
   DateTime _selectedDate  = DateTime.now();
   TimeOfDay _startTime = TimeOfDay.now();
   TimeOfDay _endTime = TimeOfDay.now();
   Uint8List? _filePath;
   XFile? _selectedFile;
   UserModel? _userModel;
+
+  //ticket data
   List<TicketModel>? _ticketModels;
 
   bool get loading => _loading;
+  bool get ticketLoading => _ticketLoading;
+
+  //event filter
   List<EventModel> get myEvents => _myEvents;
+  List<EventModel> get outOfStockEvents => _outOfStockEvents;
+  List<EventModel> get expairedEvents => _expairedEvents;
+  List<EventModel> get selectedEvents => _selectedEvents;
+
+  EventModel? get editEvent => _editEvent;
+
+  //category
+  List<List<EventModel>> get categoryFilter => _categoryFilter;
+
+  //event creating
   DateTime get selectedDate => _selectedDate;
   TimeOfDay get startTime => _startTime;
   TimeOfDay get endTime => _endTime;
   Uint8List? get filePath => _filePath;
   UserModel? get userModel => _userModel;
+
+  //ticket data
   List<TicketModel>? get ticketModels => _ticketModels;
+
+  setEventToEdit(EventModel? event)
+  {
+    _editEvent = event;
+  }
 
   setLoading(bool loading)async
   {
     _loading = loading;
+    notifyListeners();
+  }
+
+  setTicketLoading(bool loading)async
+  {
+    _ticketLoading = loading;
     notifyListeners();
   }
 
@@ -98,23 +148,68 @@ class DashboardViewModel extends ChangeNotifier{
     }
     return await _storage.ref("posters/").child("${DateTime.now().microsecondsSinceEpoch.toString()}.${_selectedFile!.mimeType!.split("/").last}").putData(_filePath!,SettableMetadata(contentType: _selectedFile!.mimeType!)).then((p0) => p0.ref.getDownloadURL());
   }
+  showOutOfStockEvents()
+  {
+    _selectedEvents = _outOfStockEvents;
+    notifyListeners();
+  }
+  showAllEvents()
+  {
+    _selectedEvents  = _myEvents;
+    notifyListeners();
+  }
+  showExpairedEvents()
+  {
+    _selectedEvents = _expairedEvents;
+    notifyListeners();
+  }
+
+  getOrders(String eventID)async
+  {
+    setTicketLoading(true);
+    final responce = await DashboardService.getEventTickets(eventID);
+    if(responce is List<TicketModel>)
+    {
+      setTicketModel(responce);
+    }
+    setTicketLoading(false);
+  }
 
   getMyEvents()async{
+    List<EventModel> outofStock = [],expaired = [],allEvents = [];
     setLoading(true);
     final responce = await DashboardService.getMyEvents();
     if(responce is List<EventModel>)
     {
-      setMyEvents(responce);
+      // filter the category
+      Map<String, List<EventModel>> groupedByCategory = {};
+      for (var event in responce) {
+        groupedByCategory.putIfAbsent(event.category, () => []).add(event);
+      }
+      _categoryFilter = groupedByCategory.values.toList();
+      
+      // filter the out of stock and expaired event
+      for (var event in responce) {
+        
+        allEvents.add(event);
+        if(DateTime.parse(event.date).microsecondsSinceEpoch < DateTime.now().microsecondsSinceEpoch)
+        {
+          expaired.add(event);
+          allEvents.remove(event);
+        }
+        else if (event.stock == "0") {
+          outofStock.add(event);
+        }
+      }
+      _expairedEvents = expaired;
+      _outOfStockEvents = outofStock;
+      _selectedEvents = allEvents;
+      setMyEvents(allEvents);
     }
     final profileResponce = await DashboardService.getUser();
     if(profileResponce is UserModel)
     {
       setUserModel(profileResponce);
-    }
-    final ticketResponce = await DashboardService.getTickets();
-    if(ticketResponce is List<TicketModel>)
-    {
-      setTicketModel(ticketResponce);
     }
     setLoading(false);
   }

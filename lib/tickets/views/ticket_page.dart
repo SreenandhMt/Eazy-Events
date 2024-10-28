@@ -1,3 +1,5 @@
+import 'package:event_manager/utils/empty_screen_message.dart';
+import 'package:event_manager/utils/loading_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:ticket_widget/ticket_widget.dart';
@@ -20,12 +22,12 @@ class TicketPage extends StatefulWidget {
 class _TicketPageState extends State<TicketPage> {
   @override
   void initState() {
-    context.read<TicketViewModel>().clearData();
     if(widget.eventID!=null)
     {
-      context.read<TicketViewModel>().getEventTickets(widget.eventID!);
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) => context.read<TicketViewModel>().getEventTickets(widget.eventID!));
     }else{
-      context.read<TicketViewModel>().getMyTickets();
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) => context.read<TicketViewModel>().getMyTickets()); 
+      
     }
     super.initState();
   }
@@ -35,11 +37,11 @@ class _TicketPageState extends State<TicketPage> {
     TicketViewModel viewModel = context.watch<TicketViewModel>();
     if(viewModel.loading)
     {
-      return Center(child: CircularProgressIndicator(color: Colors.red));
+      return const LoadingScreen();
     }
     return Scaffold(
       appBar: customAppBar(size,context),
-      body: ListView(
+      body:viewModel.ticketModel.isEmpty? const EmptyScreenMessage(text: "No Ticket Found", icon: Icons.close) : ListView(
         children: [
           Wrap(
             crossAxisAlignment: size.width<=900? WrapCrossAlignment.center:WrapCrossAlignment.start,
@@ -57,14 +59,14 @@ class _TicketPageState extends State<TicketPage> {
 
 class TicketData extends StatelessWidget {
   const TicketData({
-    Key? key,
+    super.key,
     required this.ticketModel,
-  }) : super(key: key);
+  });
   final UserTicketModel ticketModel;
 
   @override
   Widget build(BuildContext context) {
-    return TicketWidget(width: 300, height: 450,isCornerRounded: true,padding: EdgeInsets.all(20), child: Column(
+    return TicketWidget(width: 300, height: 450,isCornerRounded: true,padding: const EdgeInsets.all(20), child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
@@ -75,12 +77,12 @@ class TicketData extends StatelessWidget {
                 height: 25.0,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(30.0),
-                  border: Border.all(width: 1.0, color: Colors.green),
+                  border: Border.all(width: 1.5, color: DateTime.parse(ticketModel.eventModel.date).millisecond<=DateTime.now().microsecond? Colors.green : Colors.red),
                 ),
                 child: Center(
                   child: Text(
-                    DateTime.parse(ticketModel.eventModel.date).millisecond<=DateTime.now().microsecond?'Avalable':"Not Avalable",
-                    style: TextStyle(color: Colors.green),
+                    DateTime.parse(ticketModel.eventModel.date).millisecond <= DateTime.now().microsecond?'Avalable':"Not Avalable",
+                    style: TextStyle(color: DateTime.parse(ticketModel.eventModel.date).millisecond<=DateTime.now().microsecond? Colors.green : Colors.red),
                   ),
                 ),
               ),
@@ -102,7 +104,7 @@ class TicketData extends StatelessWidget {
                 ticketDetailsWidget('Name', ticketModel.ticketModel.userName, '', ''),
                  Padding(
                   padding: const EdgeInsets.only(top: 12.0, right: 12.0),
-                  child: EventDetailsWidget('Event', ticketModel.eventModel.title),
+                  child: eventDetailsWidget('Event', ticketModel.eventModel.title),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(top: 12.0, right: 12.0),
@@ -126,13 +128,13 @@ class TicketData extends StatelessWidget {
   }
 }
 
-Widget EventDetailsWidget(String firstTitle, String firstDesc) {
+Widget eventDetailsWidget(String firstTitle, String firstDesc) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: [
       Padding(
         padding: const EdgeInsets.only(left: 12.0),
-        child: Container(
+        child: SizedBox(
           width: 236,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

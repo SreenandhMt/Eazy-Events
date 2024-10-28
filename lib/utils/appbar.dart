@@ -10,9 +10,9 @@ import 'package:provider/provider.dart';
 import '../components/appbar_actions.dart';
 import '../components/appbar_logo.dart';
 
-String? SearchQuery;
+String? searchQuery;
 
-PreferredSizeWidget customAppBar(Size size,BuildContext context){
+PreferredSizeWidget customAppBar(Size size,BuildContext context,{bool? isSearchPage}){
   //mobile view
   if(size.width<871.0)
   {
@@ -224,10 +224,15 @@ PreferredSizeWidget customAppBar(Size size,BuildContext context){
                   Expanded(
                     child: TextField(
                       cursorColor: Colors.green,
-                      onChanged: (value) => SearchQuery=value,
+                      onChanged: (value) => searchQuery=value,
                       onSubmitted: (value) {
-                        if(SearchQuery==null)return;
-                      AppNavigation.showSearchScreen(context, SearchQuery!);
+                        if(searchQuery==null)return;
+                        if(isSearchPage!=null)
+                        {
+                          context.read<SearchViewModel>().searchItem(searchQuery!);
+                          return;
+                        }
+                        AppNavigation.showSearchScreen(context, searchQuery!);
                       },
                       decoration: InputDecoration(
                         prefixIcon: IconButton(
@@ -235,8 +240,8 @@ PreferredSizeWidget customAppBar(Size size,BuildContext context){
                           iconSize: 20,
                     icon: const Icon(Icons.search),
                     onPressed: () {
-                      if(SearchQuery==null)return;
-                      AppNavigation.showSearchScreen(context, SearchQuery!);
+                      if(searchQuery==null)return;
+                      AppNavigation.showSearchScreen(context, searchQuery!);
                     },
                   ),
                         hintText: "Search events",

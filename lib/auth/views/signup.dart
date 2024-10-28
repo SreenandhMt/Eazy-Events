@@ -1,11 +1,6 @@
-import 'package:event_manager/auth/view_models/auth_view_model.dart';
-import 'package:event_manager/auth/views/auth_route.dart';
 import 'package:event_manager/components/auth/signin_desktop_view.dart';
 import 'package:event_manager/components/auth/signin_mobile_view.dart';
-import 'package:event_manager/core/size.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
 
 class SigninPage extends StatefulWidget {
   const SigninPage({super.key});

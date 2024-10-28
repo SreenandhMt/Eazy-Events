@@ -4,6 +4,11 @@ import 'package:flutter/material.dart';
 import '../../home/models/event_model.dart';
 
 class SearchViewModel extends ChangeNotifier {
+  SearchViewModel()
+  {
+    _storeData = SearchService.getData();
+  }
+  Future<List<EventModel>>? _storeData;
   List<EventModel> _eventList = [];
   bool _loading = false;
 
@@ -23,8 +28,16 @@ class SearchViewModel extends ChangeNotifier {
   
   searchItem(String text)async
   {
+    List<EventModel> data;
     setLoading(true);
-    final responce = await SearchService.getSearch(text);
+    if(_storeData==null)
+    {
+      _storeData = SearchService.getData();
+      data = await _storeData!;
+    }else{
+       data = await _storeData!;
+    }
+    final responce = await SearchService.getSearch(text,data);
     if(responce is List<EventModel>)
     {
       setEventModel(responce);

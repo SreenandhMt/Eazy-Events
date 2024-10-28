@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -7,17 +8,15 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import 'package:event_manager/components/event_details/register_button.dart';
-import 'package:event_manager/event_details/models/user_model.dart';
 import 'package:event_manager/event_details/view_models/event_view_model.dart';
-import 'package:event_manager/home/models/event_model.dart';
 
 import '../../core/colors.dart';
 import '../../core/size.dart';
 
 class EventDetailsDesktopView extends StatefulWidget {
   const EventDetailsDesktopView({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<EventDetailsDesktopView> createState() =>
@@ -70,7 +69,7 @@ class _EventDetailsDesktopViewState extends State<EventDetailsDesktopView> {
                   ),
                   Text(
                     eventViewModel.eventModel!.title,
-                    style: GoogleFonts.fredoka(
+                    style: GoogleFonts.kanit(
                         fontSize: 40, fontWeight: FontWeight.bold),
                   ),
                   height10,
@@ -109,7 +108,10 @@ class _EventDetailsDesktopViewState extends State<EventDetailsDesktopView> {
                             if (FirebaseAuth.instance.currentUser!=null&&eventViewModel.userModel!.uid!=FirebaseAuth.instance.currentUser!.uid)
                               MaterialButton(
                                 onPressed: () {
-                                  if(eventViewModel.userFollowed)return context.read<EventViewModel>().unfollow(eventViewModel.eventModel!.createrid);
+                                  if(eventViewModel.userFollowed){
+                                     context.read<EventViewModel>().unfollow(eventViewModel.eventModel!.createrid);
+                                     return;
+                                  }
                                   context.read<EventViewModel>().follow(eventViewModel.eventModel!.createrid);
                                 },
                                 color: Colors.blue,
@@ -143,7 +145,7 @@ class _EventDetailsDesktopViewState extends State<EventDetailsDesktopView> {
                       ],
                     ),
                   ),
-                  //title
+                  //location
                   Text("Location",
                       style: GoogleFonts.fredoka(
                           fontSize: 24, fontWeight: FontWeight.bold)),
@@ -152,13 +154,23 @@ class _EventDetailsDesktopViewState extends State<EventDetailsDesktopView> {
                     style: GoogleFonts.fredoka(
                         fontSize: 15, fontWeight: FontWeight.w400),
                   ),
-                  //title
+                  //about
                   height10,
                   Text("About event",
                       style: GoogleFonts.fredoka(
                           fontSize: 24, fontWeight: FontWeight.bold)),
                   height20,
-                  Text(eventViewModel.eventModel!.about),
+                  TextParser(text: eventViewModel.eventModel!.about),
+                  // registration details
+                  if(eventViewModel.eventModel!.registrationDetails!=null&&eventViewModel.eventModel!.registrationDetails!.isNotEmpty)
+                  ...[
+                    height10,
+                  Text("Regisraction details",
+                      style: GoogleFonts.fredoka(
+                          fontSize: 24, fontWeight: FontWeight.bold)),
+                  height20,
+                  Text(eventViewModel.eventModel!.registrationDetails!),
+                  ],
                 ],
               ),
             ),
@@ -183,5 +195,83 @@ class _EventDetailsDesktopViewState extends State<EventDetailsDesktopView> {
         ),
       ],
     );
+  }
+}
+
+class TextParser extends StatelessWidget {
+  final String text;
+
+  TextParser({required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return RichText(
+      text: TextSpan(
+        children: _parseText(text),
+        style: const TextStyle(color: Colors.white60)
+      ),
+    );
+  }
+
+  List<InlineSpan> _parseText(String text) {
+    final List<InlineSpan> spans = [];
+
+    // Updated regex to detect bold (**text**), italic (*text*), and image URLs
+
+    final RegExp regExp = RegExp(r'\*\*(.*?)\*\*|\*(.*?)\*|<?(https?:\/\/\S*(img|image)\S*)>?');
+
+    final Iterable<RegExpMatch> matches = regExp.allMatches(text);
+
+    int lastMatchEnd = 0;
+    if (matches.isEmpty) {
+      spans.add(TextSpan(text: text));  // Fallback to full text if no matches
+      return spans;
+    }
+
+    for (final match in matches) {
+      if (lastMatchEnd < match.start) {
+        spans.add(TextSpan(text: text.substring(lastMatchEnd, match.start),style: const TextStyle(color: Colors.white54,fontWeight: FontWeight.w600,fontSize: 15)));
+      }
+
+      if (match.group(1) != null) {
+        // Bold text
+        spans.add(TextSpan(
+          text: match.group(1)!,
+          style: const TextStyle(fontWeight: FontWeight.bold,color: Colors.white,fontSize: 15),
+        ));
+      } else if (match.group(2) != null) {
+        // Italic text
+        spans.add(TextSpan(
+          text: match.group(2)!,
+          style: const TextStyle(fontStyle: FontStyle.italic,color: Colors.white54,fontWeight: FontWeight.w600,fontSize: 15),
+        ));
+      } else if (match.group(3) != null) {
+        // image
+        spans.add(const TextSpan(text: '\n'));
+
+        final String imageUrl = match.group(3)!.replaceAll(RegExp(r'[<>]'), '');
+
+        spans.add(WidgetSpan(
+          alignment: PlaceholderAlignment.middle,
+          child: Padding(
+            padding: const EdgeInsets.only(top:10,bottom: 10),
+            child: CachedNetworkImage(
+              imageUrl: imageUrl,
+              width: double.infinity,
+              height: 400,
+              fit: BoxFit.cover,
+            ),
+          ),
+        ));
+      }
+
+      lastMatchEnd = match.end;
+    }
+
+    if (lastMatchEnd < text.length) {
+      spans.add(TextSpan(text: text.substring(lastMatchEnd),style: const TextStyle(color: Colors.white54,fontWeight: FontWeight.w600,fontSize: 15)));
+    }
+
+    return spans;
   }
 }

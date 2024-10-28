@@ -38,32 +38,27 @@ class _DashboardTextformState extends State<DashboardTextform> {
 
 class TitleText extends StatelessWidget {
   const TitleText({
-    Key? key,
+    super.key,
     required this.text,
     this.subtitle,
-  }) : super(key: key);
+  });
   final String text;
   final String? subtitle;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-              padding: const EdgeInsets.only(left: 6,bottom: 5),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(text,
-                      style: TextStyle(
-                          fontSize: 17, fontWeight: FontWeight.w500,color:isDarkTheme(context)? Colors.white:Colors.black)),
-                          if(subtitle!=null)...[
-                            height5,
-                          Padding(
-                            padding: const EdgeInsets.only(right: 30),
-                            child: Text(subtitle!,style: const TextStyle(fontSize: 13),),
-                          )
-                          ],
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(text,
+        textAlign: TextAlign.left,
+            style: TextStyle(
+                fontSize: 17, fontWeight: FontWeight.w500,color:isDarkTheme(context)? Colors.white:Colors.black)),
+                if(subtitle!=null)...[
+                  height5,
+                Text(subtitle!,textAlign: TextAlign.left,style: const TextStyle(fontSize: 13),)
                 ],
-              ),
-            );
+      ],
+    );
   }
 }

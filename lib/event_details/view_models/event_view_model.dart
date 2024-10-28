@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:event_manager/event_details/models/user_model.dart';
 import 'package:event_manager/event_details/repo/event_service.dart';
 import 'package:event_manager/home/models/event_model.dart';
@@ -9,13 +7,13 @@ import 'package:toastification/toastification.dart';
 
 class EventViewModel extends ChangeNotifier{
   bool _loading = false;
-  bool _profileLoading = false;
+  // bool _profileLoading = false;
   EventModel? _eventModel;
   UserModel? _userModel;
   bool _userFollowed = false;
 
   bool get loading => _loading;
-  bool get profileLoading => _profileLoading;
+  // bool get profileLoading => _profileLoading;
   bool get userFollowed => _userFollowed;
   EventModel? get eventModel => _eventModel;
   UserModel? get userModel => _userModel;
@@ -98,9 +96,11 @@ class EventViewModel extends ChangeNotifier{
   }
 
   createTicket({required String eventID,required String stock,required String createrID,required String phoneNumber,required String name})async{
-    if(FirebaseAuth.instance.currentUser==null) return showMessage(ToastificationStyle.fillColored, ToastificationType.error, "You are not logged");
+    final user = FirebaseAuth.instance.currentUser;
+    if(user==null) return showMessage(ToastificationStyle.fillColored, ToastificationType.error, "You are not logged");
     setLoading(true);
-    EventService.createTicket(eventID: eventID,phoneNumber: phoneNumber,name: name,createrID: createrID,stock: stock);
+    await EventService.createTicket(eventID: eventID,phoneNumber: phoneNumber,name: name,createrID: createrID,stock: stock);
+    user.updateDisplayName(name);
     setLoading(false);
   }
 

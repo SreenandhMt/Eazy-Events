@@ -1,22 +1,24 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sticky_headers/sticky_headers/widget.dart';
 
 import 'package:event_manager/home/models/event_model.dart';
+import 'package:toastification/toastification.dart';
 
 import '../../core/colors.dart';
 import 'ticket_register.dart';
 
 class RegisterButton extends StatefulWidget {
   const RegisterButton({
-    Key? key,
+    super.key,
     required this.height,
     required this.fee,
     required this.eventID,
     required this.createrID,
     required this.stock,
     required this.eventModel,
-  }) : super(key: key);
+  });
   final double height;
   final String fee;
   final String eventID;
@@ -48,6 +50,18 @@ class _RegisterButtonState extends State<RegisterButton> {
                   padding: const EdgeInsets.all(10),
                   child: MaterialButton(onPressed: (){
                     if(int.parse(widget.stock)<=0)return;
+                    if(FirebaseAuth.instance.currentUser==null)
+                    {
+                      toastification.show(
+                              title: const Text("You are not logged"),
+                              style: ToastificationStyle.fillColored,
+                              type: ToastificationType.error,
+                              autoCloseDuration: const Duration(seconds: 4),
+                              animationDuration:
+                                  const Duration(milliseconds: 200),
+                            );
+                      return;
+                    }
                     showDialog(context: context, builder: (context) => Dialog(child: CheckoutPage(eventModel: widget.eventModel),),);
                   },minWidth: double.infinity,height: 50,padding: const EdgeInsets.all(10),color: AppColor.primaryColor,child: Text("Get Ticket",style: GoogleFonts.aBeeZee(),),),
                 )
