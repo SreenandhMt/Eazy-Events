@@ -17,6 +17,7 @@ class _CategoryWidgetState extends State<CategoryWidget> {
   Widget build(BuildContext context) {
     Size screenSize = MediaQuery.of(context).size;
     if (screenSize.width < 1105) {
+      // listview for mobile screen
       return LimitedBox(
           maxWidth: screenSize.width * 0.9,
           maxHeight: 150,
@@ -47,6 +48,7 @@ class _CategoryWidgetState extends State<CategoryWidget> {
             ),
           ));
     }
+    // row center for desktop screen
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(
@@ -62,6 +64,7 @@ class _CategoryWidgetState extends State<CategoryWidget> {
                 child: CircleAvatar(
                   radius: 50,
                   backgroundColor: AppColor.secondaryColor(context),
+                  // images
                   child: Image.asset(
                       ImageAssets.categoryImage(
                           index + 1, isDarkTheme(context)),

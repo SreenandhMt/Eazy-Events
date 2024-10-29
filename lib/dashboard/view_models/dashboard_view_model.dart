@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:typed_data';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:event_manager/event_details/repo/event_service.dart';
 import 'package:event_manager/tickets/models/user_ticket_model.dart';
 
@@ -32,6 +33,7 @@ List<String> eventType = [
 class DashboardViewModel extends ChangeNotifier{
   bool _loading = false;
   bool _ticketLoading = false;
+  List<EventModel> _allEvents = [];
   // event filter
   List<EventModel> _myEvents = [];
   List<EventModel> _outOfStockEvents = [];
@@ -58,6 +60,8 @@ class DashboardViewModel extends ChangeNotifier{
   bool get loading => _loading;
   bool get ticketLoading => _ticketLoading;
 
+   List<EventModel> get allEvents => _allEvents;
+
   //event filter
   List<EventModel> get myEvents => _myEvents;
   List<EventModel> get outOfStockEvents => _outOfStockEvents;
@@ -82,6 +86,7 @@ class DashboardViewModel extends ChangeNotifier{
   setEventToEdit(EventModel? event)
   {
     _editEvent = event;
+    notifyListeners();
   }
 
   setLoading(bool loading)async
@@ -176,12 +181,48 @@ class DashboardViewModel extends ChangeNotifier{
   }
 
   getMyEvents()async{
-    List<EventModel> outofStock = [],expaired = [],allEvents = [];
     setLoading(true);
     final responce = await DashboardService.getMyEvents();
     if(responce is List<EventModel>)
     {
-      // filter the category
+      _allEvents = responce;
+      filterEvents(responce);
+    }
+    final profileResponce = await DashboardService.getUser();
+    if(profileResponce is UserModel)
+    {
+      setUserModel(profileResponce);
+    }
+    setLoading(false);
+  }
+
+  deleteEvent(EventModel event)async
+  {
+    setLoading(true);
+    DashboardService.deleteEvent(event.id);
+    _allEvents.remove(event);
+    await filterEvents(_allEvents);
+    setLoading(false);
+  }
+
+  createEvent({required Map<String,dynamic> event})async
+  {
+    setLoading(true);
+    DashboardService.createEvents(event);
+    setLoading(false);
+  }
+
+  updateEvent({required Map<String,dynamic> event})
+  {
+    setLoading(true);
+    DashboardService.updateEvents(event);
+    setLoading(false);
+  }
+
+  filterEvents(List<EventModel> responce)async
+  {
+    List<EventModel> outofStock = [],expaired = [],allEvents = [];
+    // filter the category
       Map<String, List<EventModel>> groupedByCategory = {};
       for (var event in responce) {
         groupedByCategory.putIfAbsent(event.category, () => []).add(event);
@@ -205,27 +246,13 @@ class DashboardViewModel extends ChangeNotifier{
       _outOfStockEvents = outofStock;
       _selectedEvents = allEvents;
       setMyEvents(allEvents);
-    }
-    final profileResponce = await DashboardService.getUser();
-    if(profileResponce is UserModel)
-    {
-      setUserModel(profileResponce);
-    }
-    setLoading(false);
   }
 
-  createEvent({required Map<String,dynamic> event})async
+  updateTicketStatus(bool status,String id)async
   {
-    setLoading(true);
-    DashboardService.createEvents(event);
-    setLoading(false);
-  }
-
-  updateEvent({required Map<String,dynamic> event})
-  {
-    setLoading(true);
-    DashboardService.updateEvents(event);
-    setLoading(false);
+    await FirebaseFirestore.instance.collection('Tickets').doc(id).update({
+      "active":status
+    });
   }
 
   showMessage(ToastificationStyle style,ToastificationType type,String text)

@@ -33,16 +33,15 @@ class _CheckoutPageState extends State<CheckoutPage> {
   @override
   Widget build(BuildContext context) {
     Size screenSize = MediaQuery.of(context).size;
-    return SizedBox(
+    return Container(
       width: 600,
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text("Checkout"),
-        ),
-        body: Padding(
+      height: screenSize.height*0.7,
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
+      child:Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Text(
                 "Contact Information",
@@ -157,11 +156,11 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   if (_formKey.currentState!.validate()) {
                     if(widget.eventModel.fee=="0")
                     {
-                      context.read<EventViewModel>().createTicket(eventID: widget.eventModel.id, stock: widget.eventModel.stock, createrID: widget.eventModel.createrid, phoneNumber: name.text, name: "${name.text} ${lastName.text}");
+                      context.read<EventViewModel>().createTicket(eventID: widget.eventModel.id, stock: widget.eventModel.stock, createrID: widget.eventModel.createrid, phoneNumber: number.text, name: "${name.text} ${lastName.text}");
                       Navigator.pop(context);
                       return;
                     }
-                    AppNavigation.paymentSreen(context, widget.eventModel.id,widget.eventModel.fee,widget.eventModel.title,widget.eventModel.subtitle,widget.eventModel.poster,stock: widget.eventModel.stock,ticketModel: TicketModel(userName: "${name.text} ${lastName.text}", userProfile: "", userNumber: number.text, eventID: widget.eventModel.id, email: email.text, uid: "", ticketID: "", createrID: widget.eventModel.createrid));
+                    AppNavigation.paymentSreen(context, widget.eventModel.id,widget.eventModel.fee,widget.eventModel.title,widget.eventModel.subtitle,widget.eventModel.poster,stock: widget.eventModel.stock,ticketModel: TicketModel(userName: "${name.text} ${lastName.text}", userProfile: "", userNumber: number.text, eventID: widget.eventModel.id, email: email.text, uid: "", ticketID: "", createrID: widget.eventModel.createrid,active: true));
                     
                   }
                 },
@@ -175,7 +174,6 @@ class _CheckoutPageState extends State<CheckoutPage> {
             ],
           ),
         ),
-      ),
     );
   }
 }

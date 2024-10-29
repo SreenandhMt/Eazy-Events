@@ -37,7 +37,7 @@ class PageRouteGoRouter {
             StatefulShellBranch(
               routes: [
                 GoRoute(
-                  path: "/event/manage",
+                  path: "/category",
                   builder: (context, state) => const EventCategoryDashBoard(),
                 ),
               ],
@@ -47,14 +47,30 @@ class PageRouteGoRouter {
                 GoRoute(
                   path: "/orders",
                   builder: (context, state) => const EventOrders(),
+                  routes: [
+                    GoRoute(
+                        path: "tickets/:id",
+                        builder: (context,GoRouterState state) => EventOrdersTickets(eventId: state.pathParameters["id"]??"",),
+                      ),
+                  ]
                 ),
               ],
             ),
             StatefulShellBranch(
               routes: [
                 GoRoute(
-                  path: "/create",
+                  path: "/manage",
                   builder: (context, state) => const EventCreatingPage(),
+                  routes: [
+                      GoRoute(
+                        path: "create",
+                        builder: (context, state) => const EventCreatingPage(),
+                      ),
+                      GoRoute(
+                        path: "update/:id",
+                        builder: (context, state) => EventCreatingPage(eventID: state.pathParameters["id"]),
+                      ),
+                    ]
                 ),
               ],
             ),

@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
+import 'package:event_manager/home/models/event_model.dart';
+
 import '/core/colors.dart';
 import '/core/size.dart';
 import '/dashboard/view_models/dashboard_view_model.dart';
@@ -50,9 +52,7 @@ class _DashboardPageState extends State<DashboardPage> {
           DashBoardDrawer(shell: widget.shell),
           if(widget.shell.currentIndex==3&&screenSize.width>900)
           ...[
-            const Spacer(),
-            Expanded(flex: 2,child: widget.shell),
-            const Spacer()
+            Expanded(child: widget.shell),
           ]
           else
           Expanded(child: widget.shell)
@@ -77,7 +77,7 @@ class _DashBoardDrawerState extends State<DashBoardDrawer> {
   @override
   Widget build(BuildContext context) {
     DashboardViewModel viewModel = context.watch<DashboardViewModel>();
-    return Container(margin: const EdgeInsets.all(10),padding: const EdgeInsets.all(10),width: 240,height: double.infinity,decoration: BoxDecoration(color: Colors.grey.shade900,borderRadius: BorderRadius.circular(4)),child: Column(
+    return Container(margin: const EdgeInsets.all(10),padding: const EdgeInsets.all(10),width: 240,height: double.infinity,decoration: BoxDecoration(color: AppColor.secondaryColor(context),borderRadius: BorderRadius.circular(4)),child: Column(
             children: [
                width30,
               const CircleAvatar(radius: 40,backgroundColor: AppColor.primaryColor,child: Icon(Icons.account_circle),),
@@ -136,7 +136,7 @@ class _DashBoardDrawerButtonState extends State<DashBoardDrawerButton> {
             height: 40,
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8),
-                color:widget.selected? AppColor.primaryColor: const Color.fromARGB(255, 77, 77, 77)),
+                color:widget.selected? AppColor.primaryColor: AppColor.tertiaryColor(context)),
             child: Center(
               child: Text(widget.title),
             ),
@@ -155,6 +155,7 @@ class DashBoardEventPage extends StatefulWidget {
 class _DashBoardEventPageState extends State<DashBoardEventPage> {
   @override
   Widget build(BuildContext context) {
+    Size screenSize = MediaQuery.of(context).size;
     DashboardViewModel viewModel = context.watch<DashboardViewModel>();
     return SingleChildScrollView(
       child: Column(
@@ -168,7 +169,39 @@ class _DashBoardEventPageState extends State<DashBoardEventPage> {
               GestureDetector(onTap: ()=>context.read<DashboardViewModel>().showExpairedEvents(),child: DashBoardCard(title: "Expaire Events",icon: Icons.add_home_work_outlined, progress: 0.1, amount: viewModel.expairedEvents.length.toString(), color: const Color.fromARGB(255, 255, 124, 77))), 
             ],
           ),
-          Theme(
+          if(screenSize.width<=1000)
+          LimitedBox(maxHeight: (70*(viewModel.selectedEvents.length+1.5)).toDouble(),child: ListView(
+            scrollDirection: Axis.horizontal,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 10,right: 10),
+                child: DashBoardTable(selectedEvents: viewModel.selectedEvents),
+              ),
+            ],
+          ),)
+          else
+          DashBoardTable(selectedEvents: viewModel.selectedEvents),
+        ],
+      ),
+    );
+  }
+}
+
+class DashBoardTable extends StatefulWidget {
+  const DashBoardTable({
+    Key? key,
+    required this.selectedEvents,
+  }) : super(key: key);
+  final List<EventModel> selectedEvents;
+
+  @override
+  State<DashBoardTable> createState() => _DashBoardTableState();
+}
+
+class _DashBoardTableState extends State<DashBoardTable> {
+  @override
+  Widget build(BuildContext context) {
+    return Theme(
             data: Theme.of(context).copyWith(
               dividerColor: Colors.transparent,
               dividerTheme: const DividerThemeData(
@@ -183,7 +216,7 @@ class _DashBoardEventPageState extends State<DashBoardEventPage> {
             margin: const EdgeInsets.only(bottom: 20,top: 10),
             padding: const EdgeInsets.all(10),
             decoration:BoxDecoration(
-              color: Colors.grey.shade600,
+              color: AppColor.secondaryColor(context),
               borderRadius: BorderRadius.circular(7)
             ),
               child: DataTable(
@@ -200,33 +233,47 @@ class _DashBoardEventPageState extends State<DashBoardEventPage> {
                 dividerThickness: 0.0,
                 dataRowHeight: 70,
                 rows: List.generate(
-                  viewModel.selectedEvents.length,
+                  widget.selectedEvents.length,
                   (index) => DataRow(cells: [
                     DataCell(CachedNetworkImage(
-                        imageUrl: viewModel.selectedEvents[index].poster,
+                        imageUrl: widget.selectedEvents[index].poster,
                         width: 60,
                         height: 50)),
                     DataCell(SizedBox(
                         width: 150,
                         child:
-                            Text(viewModel.selectedEvents[index].title, maxLines: 1))),
+                            Text(widget.selectedEvents[index].title, maxLines: 1))),
                     DataCell(
-                      Text(viewModel.selectedEvents[index].fee),
+                      Text(widget.selectedEvents[index].fee),
                     ),
-                    DataCell(Text(viewModel.selectedEvents[index].stock)),
+                    DataCell(Text(widget.selectedEvents[index].stock)),
                     DataCell(IconButton(onPressed: (){
-                      viewModel.setEventToEdit(viewModel.selectedEvents[index]);
-                      context.go("/create");
-                    },icon: const Icon(Icons.edit))),//TODO: add edit
-                    const DataCell(Icon(Icons.delete,color: Colors.red))//TODO: add Delete with conformation
+                      context.read<DashboardViewModel>().setEventToEdit(widget.selectedEvents[index]);
+                       context.go("/manage/update/${widget.selectedEvents[index].id}");
+                    },icon: const Icon(Icons.edit))),
+                    DataCell(IconButton(onPressed: () {
+                      showDialog(context: context, builder: (context) => Dialog(child: SizedBox(
+                        height: 100,
+                        width: 200,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text("Are you sure to delete"),
+                            height10,
+                            MaterialButton(onPressed: () {
+                              context.read<DashboardViewModel>().deleteEvent(widget.selectedEvents[index]);
+                              context.pop();
+                            },child: Text("Delete"),color: AppColor.primaryColor)
+                          ],
+                        ),
+                      ),));
+                    },icon: const Icon(Icons.delete,color: Colors.red)))
                   ]),
                 ),
               ),
             ),
-          ),
-        ],
-      ),
-    );
+          );
   }
 }
 
@@ -260,7 +307,7 @@ class _DashBoardCardState extends State<DashBoardCard> {
                     width: 240,
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(8),
-                        color: const Color.fromARGB(255, 77, 77, 77)),
+                        color: AppColor.tertiaryColor(context)),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [

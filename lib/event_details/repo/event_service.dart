@@ -97,11 +97,12 @@ class EventService {
       "userName":name,
       "userEmail":_auth.currentUser!.email??"",
       "contactNumber":phoneNumber,
-      "userPhoto":_auth.currentUser!.phoneNumber??"",
+      "userPhoto":_auth.currentUser!.photoURL??"",
       "uid":_auth.currentUser!.uid,
       "ticketID":id,
       "createrID":createrID,
       "eventID":eventID,
+      "active":true
     });
     return "success";
   } 

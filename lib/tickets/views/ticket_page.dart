@@ -1,3 +1,5 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:event_manager/core/size.dart';
 import 'package:event_manager/utils/empty_screen_message.dart';
 import 'package:event_manager/utils/loading_screen.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +9,8 @@ import 'package:ticket_widget/ticket_widget.dart';
 import 'package:event_manager/tickets/models/user_ticket_model.dart';
 import 'package:event_manager/tickets/view_model/ticket_view_model.dart';
 import 'package:event_manager/utils/appbar.dart';
+
+//TODO: set categorice events
 
 class TicketPage extends StatefulWidget {
   const TicketPage({
@@ -22,13 +26,8 @@ class TicketPage extends StatefulWidget {
 class _TicketPageState extends State<TicketPage> {
   @override
   void initState() {
-    if(widget.eventID!=null)
-    {
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) => context.read<TicketViewModel>().getEventTickets(widget.eventID!));
-    }else{
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) => context.read<TicketViewModel>().getMyTickets()); 
-      
-    }
+    
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) => context.read<TicketViewModel>().getMyTickets()); 
     super.initState();
   }
   @override
@@ -42,16 +41,31 @@ class _TicketPageState extends State<TicketPage> {
     return Scaffold(
       appBar: customAppBar(size,context),
       body:viewModel.ticketModel.isEmpty? const EmptyScreenMessage(text: "No Ticket Found", icon: Icons.close) : ListView(
-        children: [
-          Wrap(
+        children: List.generate(viewModel.ticketModel.length, (index) {
+          return Column(
+            crossAxisAlignment:size.width<=900? CrossAxisAlignment.center: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  children: [
+                    CachedNetworkImage(imageUrl: viewModel.ticketModel[index].first.eventModel.poster,width: 100,height: 90),
+                    width10,
+                    SizedBox(width: 300,child: Text(viewModel.ticketModel[index].first.eventModel.title,style: TextStyle(fontWeight: FontWeight.w800,fontSize: 15),maxLines: 2)),
+                  ],
+                ),
+              ),
+              Wrap(
             crossAxisAlignment: size.width<=900? WrapCrossAlignment.center:WrapCrossAlignment.start,
             alignment:size.width<=900? WrapAlignment.center: WrapAlignment.start,
-            children:List.generate(viewModel.ticketModel.length, (index) => Padding(
+            children:List.generate(viewModel.ticketModel[index].length, (inx) => Padding(
               padding: const EdgeInsets.all(8.0),
-              child: GestureDetector(onTap: (){},child: TicketData(ticketModel: viewModel.ticketModel[index])),
+              child: GestureDetector(onTap: (){},child: TicketData(ticketModel: viewModel.ticketModel[index][inx])),
             ),),
-          ),
-        ],
+          )
+            ],
+          );
+        },),
       ),
     );
   }
@@ -77,12 +91,12 @@ class TicketData extends StatelessWidget {
                 height: 25.0,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(30.0),
-                  border: Border.all(width: 1.5, color: DateTime.parse(ticketModel.eventModel.date).millisecond<=DateTime.now().microsecond? Colors.green : Colors.red),
+                  border: Border.all(width: 1.5, color:!ticketModel.ticketModel.active? DateTime.parse(ticketModel.eventModel.date).millisecond>=DateTime.now().microsecond? Colors.red : Colors.red:Colors.green),
                 ),
                 child: Center(
                   child: Text(
-                    DateTime.parse(ticketModel.eventModel.date).millisecond <= DateTime.now().microsecond?'Avalable':"Not Avalable",
-                    style: TextStyle(color: DateTime.parse(ticketModel.eventModel.date).millisecond<=DateTime.now().microsecond? Colors.green : Colors.red),
+                   !ticketModel.ticketModel.active? DateTime.parse(ticketModel.eventModel.date).millisecond <= DateTime.now().microsecond?'Not Avalable':"Expired":"Avalable",
+                    style: TextStyle(color: !ticketModel.ticketModel.active? DateTime.parse(ticketModel.eventModel.date).millisecond>=DateTime.now().microsecond? Colors.red : Colors.red:Colors.green),
                   ),
                 ),
               ),

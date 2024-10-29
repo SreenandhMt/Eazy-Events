@@ -7,6 +7,7 @@ class TicketModel {
   final String uid;
   final String ticketID;
   final String createrID;
+  final dynamic active;
 
   TicketModel({
     required this.userName,
@@ -17,10 +18,11 @@ class TicketModel {
     required this.uid,
     required this.ticketID,
     required this.createrID,
+    required this.active,
   });
 
   factory TicketModel.formjson(Map e)
   {
-    return TicketModel(userName: e["userName"], userProfile: e["userPhoto"], userNumber: e["contactNumber"], eventID: e["eventID"], email: e["userEmail"], uid: e["uid"], ticketID: e["ticketID"],createrID: e["createrID"]);
+    return TicketModel(userName: e["userName"], userProfile: e["userPhoto"], userNumber: e["contactNumber"], eventID: e["eventID"], email: e["userEmail"], uid: e["uid"], ticketID: e["ticketID"],createrID: e["createrID"],active: e["active"]);
   }
 }

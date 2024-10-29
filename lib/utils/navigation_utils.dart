@@ -16,6 +16,9 @@ class AppNavigation {
   static dashboardPage(BuildContext context){
     context.go("/dash");
   }
+  static dashboardEventCreatePage(BuildContext context){
+    context.go("/manage/create");
+  }
   static ticketPage(BuildContext context){
     context.go("/tickets");
   }

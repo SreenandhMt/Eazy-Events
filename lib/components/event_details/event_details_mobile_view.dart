@@ -1,4 +1,5 @@
 import 'package:event_manager/components/event_details/event_details_desktop_view.dart';
+import 'package:event_manager/components/event_details/profile_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -8,6 +9,10 @@ import 'package:provider/provider.dart';
 import '../../core/colors.dart';
 import '../../core/size.dart';
 import '../../event_details/view_models/event_view_model.dart';
+
+TextStyle textStyleFredoka({double? fontSize,FontWeight? fontWeight,Color? color}){
+  return GoogleFonts.fredoka(fontSize: fontSize,fontWeight: fontWeight,color: color);
+}
 
 class EventDetailsMobileView extends StatefulWidget {
   const EventDetailsMobileView({
@@ -19,135 +24,65 @@ class EventDetailsMobileView extends StatefulWidget {
 }
 
 class _EventDetailsMobileViewState extends State<EventDetailsMobileView> {
-  final _key = GlobalKey();
-  double columnHeight = 0;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _getColumnHeight();
-    });
-  }
-
-  void _getColumnHeight() {
-    final RenderBox? renderBox =
-        _key.currentContext?.findRenderObject() as RenderBox?;
-    if (renderBox != null) {
-      setState(() {
-        columnHeight = renderBox.size.height;
-      });
-    }
   }
 
   @override
   Widget build(BuildContext context) {
-    // Size screenSize = MediaQuery.of(context).size;
+    Size screenSize = MediaQuery.of(context).size;
     EventViewModel eventViewModel = context.watch<EventViewModel>();
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
         children: [
           Column(
-            key: _key,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               height20,
               Text(
                 DateFormat.yMMMMd('en_US')
                     .format(DateTime.parse(eventViewModel.eventModel!.date)),
-                style: GoogleFonts.fredoka(
+                style: textStyleFredoka(
                     fontSize: 13, fontWeight: FontWeight.w600),
                 maxLines: 1,
               ),
               Text(
                 eventViewModel.eventModel!.title,
-                style: GoogleFonts.fredoka(
+                style: textStyleFredoka(
                     fontSize: 40, fontWeight: FontWeight.bold),
               ),
               height10,
               Text(
                 eventViewModel.eventModel!.subtitle,
-                style: GoogleFonts.fredoka(
+                style: textStyleFredoka(
                     fontSize: 15, fontWeight: FontWeight.w400),
               ),
               height25,
               //profile
-              Container(
-                      margin: const EdgeInsets.only(
-                          left: 20, right: 20, top: 10, bottom: 10),
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                          color: AppColor.secondaryColor(context),
-                          borderRadius: BorderRadius.circular(15)),
-                      child: Row(
-                            // mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              CircleAvatar(
-                                radius: 30,
-                                backgroundImage:
-                                    NetworkImage(eventViewModel.userModel!.profilePhoto),
-                              ),
-                              const SizedBox(width: 10),
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(eventViewModel.userModel!.name,style: const TextStyle(fontWeight: FontWeight.w700,fontSize: 19),),
-                                  Text("Followers ${eventViewModel.userModel!.followers.length.toString()}"),
-                                ],
-                              ),
-                              const Expanded(child: SizedBox()),
-                              if (eventViewModel.userModel!.uid !=
-                                  FirebaseAuth.instance.currentUser!.uid)
-                                MaterialButton(
-                                  onPressed: () {
-                                    context.read<EventViewModel>().follow(eventViewModel.eventModel!.createrid);
-                                  },
-                                  color: Colors.blue,
-                                  padding: const EdgeInsets.all(20),
-                                  child: const Text("Follow"),
-                                )
-                            ],
-                          ),
-                    ),
+              ProfileWidget(userModel: eventViewModel.userModel!, createrID: eventViewModel.eventModel!.createrid, isFollowed: eventViewModel.userFollowed),
               //title
               Text("Date and time",
-                  style: GoogleFonts.fredoka(
+                  style: textStyleFredoka(
                       fontSize: 24, fontWeight: FontWeight.bold)),
-              Container(
-                width: 100,
-                padding: const EdgeInsets.all(15),
-                margin: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                    color: AppColor.tertiaryColor(context),
-                    borderRadius: BorderRadius.circular(8)),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Text(DateFormat('MMMM', "en_US")
-                        .format(DateTime.parse(eventViewModel.eventModel!.date))),
-                    CircleAvatar(
-                        child: Text(DateTime.parse(eventViewModel.eventModel!.date)
-                            .day
-                            .toString())),
-                    Text(eventViewModel.eventModel!.startTime),
-                  ],
-                ),
-              ),
+              height10,
+              DateAndTimeWidget(eventModel: eventViewModel.eventModel!,width: screenSize.width*0.9,),
+             height10,
               //title
               Text("Location",
-                  style: GoogleFonts.fredoka(
+                  style: textStyleFredoka(
                       fontSize: 24, fontWeight: FontWeight.bold)),
               Text(
                 "Online",
-                style: GoogleFonts.fredoka(
+                style: textStyleFredoka(
                     fontSize: 15, fontWeight: FontWeight.w400),
               ),
               //title
              height10,
                     Text("About event",
-                        style: GoogleFonts.fredoka(
+                        style: textStyleFredoka(
                             fontSize: 24, fontWeight: FontWeight.bold)),
                     height20,
                     TextParser(text: eventViewModel.eventModel!.about),
@@ -156,7 +91,7 @@ class _EventDetailsMobileViewState extends State<EventDetailsMobileView> {
                     ...[
                       height10,
                     Text("Regisraction details",
-                        style: GoogleFonts.fredoka(
+                        style: textStyleFredoka(
                             fontSize: 24, fontWeight: FontWeight.bold)),
                     height20,
                     Text(eventViewModel.eventModel!.registrationDetails!),

@@ -15,15 +15,19 @@ class SearchService {
     
     return responce;
   }
-  static Future<Object> getSearch(String text,List<EventModel> data)async
-  {
+  static Future<List<EventModel>> getSearch(String text, List<EventModel> data) async {
     List<EventModel> result = [];
+
+    if (text.isEmpty) return data;
+
+    final searchText = text.toLowerCase();
     for (var event in data) {
-      if(event.title.contains(text.toUpperCase())||event.title.contains(text.toLowerCase())||event.category.contains(text.toUpperCase()))
-      {
+      if (event.title.toLowerCase().contains(searchText) ||
+          event.category.toLowerCase().contains(searchText)||event.createrName.toLowerCase().contains(searchText)||event.date.toLowerCase().contains(searchText)||event.fee.toLowerCase().contains(searchText)) {
         result.add(event);
       }
     }
+
     return result;
   }
 }

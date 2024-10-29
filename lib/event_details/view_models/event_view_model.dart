@@ -21,6 +21,8 @@ class EventViewModel extends ChangeNotifier{
   setEventData(EventModel eventModel)
   {
     _eventModel = eventModel;
+    getUser(eventModel.createrid);
+    checkUserFollow(eventModel.createrid);
   }
 
   setUserModel(UserModel userModel){
@@ -67,6 +69,7 @@ class EventViewModel extends ChangeNotifier{
     {
       showMessage(ToastificationStyle.fillColored, ToastificationType.error, responce);
     }
+    _userModel!.followers.add(FirebaseAuth.instance.currentUser!.uid);
     checkUserFollow(createrid);
   }
   unfollow(String createrid)async
@@ -76,6 +79,7 @@ class EventViewModel extends ChangeNotifier{
     {
       showMessage(ToastificationStyle.fillColored, ToastificationType.error, responce);
     }
+    _userModel!.followers.remove(FirebaseAuth.instance.currentUser!.uid);
     checkUserFollow(createrid);
   }
 
@@ -85,7 +89,6 @@ class EventViewModel extends ChangeNotifier{
     final responce = await EventService.getEvent(id);
     if(responce is EventModel)
     {
-      await getUser(responce.createrid);
       setEventData(responce);
     }
     if(responce is String)

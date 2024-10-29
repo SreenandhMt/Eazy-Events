@@ -19,14 +19,12 @@ class AppbarActions extends StatelessWidget {
       {
         return Row(
       children: [
-      AppbarActionsIcons(icon: Icons.add, text: "Create an event",onTap: () => AppNavigation.dashboardPage(context),),
+      AppbarActionsIcons(icon: Icons.add, text: "Create an event",onTap: () => AppNavigation.dashboardEventCreatePage(context),),
           width20,
           AppbarActionsIcons(icon: Icons.airplane_ticket_outlined, text: "Ticket",onTap: () {
             AppNavigation.ticketPage(context);
           }),
           width35,
-          AppbarActionsIcons(icon: Icons.favorite_border_rounded, text: "Favorite",onTap: () {}),
-          width30,
           AppBarProfilePopUpButton(child: Container(
             padding: const EdgeInsets.all(5),
             decoration: BoxDecoration(borderRadius: BorderRadius.circular(17),color: AppColor.secondaryColor(context)),

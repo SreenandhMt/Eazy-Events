@@ -1,14 +1,15 @@
-import 'dart:developer';
-
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:event_manager/core/size.dart';
-import 'package:event_manager/utils/dark_check.dart';
-import 'package:event_manager/utils/empty_screen_message.dart';
-import 'package:event_manager/utils/loading_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:ticket_widget/ticket_widget.dart';
+
+import 'package:event_manager/core/colors.dart';
+import 'package:event_manager/core/size.dart';
+import 'package:event_manager/home/models/event_model.dart';
+import 'package:event_manager/utils/dark_check.dart';
+import 'package:event_manager/utils/loading_screen.dart';
 
 import '../view_models/dashboard_view_model.dart';
 
@@ -20,62 +21,119 @@ class EventOrders extends StatefulWidget {
 }
 
 class _EventOrdersState extends State<EventOrders> {
-  int? selectedIndex;
+
+
   @override
   Widget build(BuildContext context) {
     Size screenSize = MediaQuery.of(context).size;
     DashboardViewModel viewModel = context.watch<DashboardViewModel>();
-    if(selectedIndex!=null)
-    {
-      if(viewModel.ticketModels==null||viewModel.ticketLoading)
+    return ListView(
+      children: [
+        Padding(
+           padding:screenSize.width<=1000? const EdgeInsets.only(left: 10,bottom: 10,top: 20):const EdgeInsets.only(left: 50,bottom: 10,top: 20),
+           child: const Text("Select Event?",style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
+         ),
+         if(screenSize.width<=1000)
+         LimitedBox(maxHeight: (70*(viewModel.myEvents.length+1.5)).toDouble(),child: ListView(
+          scrollDirection: Axis.horizontal,
+          children: [
+            OrderEventsTable(events: viewModel.myEvents)
+          ],
+         ),)
+         else
+         OrderEventsTable(events: viewModel.myEvents)
+      ],
+    );
+  }
+}
+
+
+class EventOrdersTickets extends StatefulWidget {
+  const EventOrdersTickets({
+    Key? key,
+    required this.eventId,
+  }) : super(key: key);
+  final String eventId;
+
+  @override
+  State<EventOrdersTickets> createState() => _EventOrdersTicketsState();
+}
+
+class _EventOrdersTicketsState extends State<EventOrdersTickets> {
+  @override
+  Widget build(BuildContext context) {
+    DashboardViewModel viewModel = context.watch<DashboardViewModel>();
+    if(viewModel.ticketModels==null||viewModel.ticketLoading)
       {
+        if(viewModel.ticketModels==null)context.read<DashboardViewModel>().getOrders(widget.eventId);
         return const LoadingScreen();
       }
       if(viewModel.ticketModels!.isEmpty)
       {
         return Column(
           children: [
-             Padding(
-            padding: const EdgeInsets.only(top: 20),
-            child: GestureDetector(
-              onTap: () => setState(() {selectedIndex = null;}),
-              child: const Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Padding(
-               padding: EdgeInsets.only(left: 50),
-               child: Text("Events",style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
-                       ),
-                       Icon(Icons.navigate_next_rounded),
-                       Padding(
-               padding: EdgeInsets.only(left: 4),
-               child: Text("Orders",style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold,color: Colors.red),),
-                       ),
-                ],
+            Padding(
+              padding: const EdgeInsets.only(top: 20),
+              child: GestureDetector(
+                onTap: () => context.pop(),
+                child: const Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(left: 50),
+                      child: Text(
+                        "Events",
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    Icon(Icons.navigate_next_rounded),
+                    Padding(
+                      padding: EdgeInsets.only(left: 4),
+                      child: Text(
+                        "Orders",
+                        style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.red),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-          const Spacer(),
+            const Spacer(),
             Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-            CircleAvatar(radius: 50,backgroundColor: isDarkTheme(context)?const Color.fromARGB(255, 102, 100, 100):const Color.fromARGB(255, 100, 100, 100),child: const Icon(Icons.info_outline_rounded,size: 40,),),
-            height20,
-            Text("Event is Empty",style: GoogleFonts.aBeeZee(fontSize: 30),),
-                      ]),
-                      const Spacer(),
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircleAvatar(
+                    radius: 50,
+                    backgroundColor: isDarkTheme(context)
+                        ? const Color.fromARGB(255, 102, 100, 100)
+                        : const Color.fromARGB(255, 100, 100, 100),
+                    child: const Icon(
+                      Icons.info_outline_rounded,
+                      size: 40,
+                    ),
+                  ),
+                  height20,
+                  Text(
+                    "Event is Empty",
+                    style: GoogleFonts.aBeeZee(fontSize: 30),
+                  ),
+                ]),
+            const Spacer(),
           ],
         );
-        // return EmptyScreenMessage(text: "Event is Empty", icon: Icons.info_outline_rounded,hideButton: true,);
       }
-      return ListView(
+    return ListView(
         shrinkWrap: true,
         children: [
           Padding(
             padding: const EdgeInsets.only(top: 20),
             child: GestureDetector(
-              onTap: () => setState(() {selectedIndex = null;}),
+              onTap: () =>context.pop(),
               child: const Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children:  [
@@ -96,23 +154,45 @@ class _EventOrdersState extends State<EventOrders> {
             padding: const EdgeInsets.all(25),
             child: Wrap(
               children: List.generate(viewModel.ticketModels!.length, (index) {
-                return Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TicketData(username: viewModel.ticketModels![index].userName, email: viewModel.ticketModels![index].email, number: viewModel.ticketModels![index].userNumber, avalable: true),
+                return PopupMenuButton(
+                  itemBuilder: (context) {
+                    return [
+                      PopupMenuItem(child: const Text("Active"),onTap: () {
+                        context.read<DashboardViewModel>().updateTicketStatus(true,viewModel.ticketModels![index].ticketID);
+                      },),
+                      PopupMenuItem(child: const Text("Claimed"),onTap: () {
+                        context.read<DashboardViewModel>().updateTicketStatus(false,viewModel.ticketModels![index].ticketID);
+                      },),
+                    ];
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TicketData(username: viewModel.ticketModels![index].userName, email: viewModel.ticketModels![index].email, number: viewModel.ticketModels![index].userNumber, avalable: viewModel.ticketModels![index].active),
+                  ),
                 );
               },),
             ),
           )
         ],
       );
-    }
-    return ListView(
-      children: [
-         const Padding(
-           padding: EdgeInsets.only(left: 50,bottom: 10,top: 20),
-           child: Text("Select Event?",style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
-         ),
-         Theme(
+  }
+}
+
+class OrderEventsTable extends StatefulWidget {
+  const OrderEventsTable({
+    super.key,
+    required this.events,
+  });
+  final List<EventModel> events;
+
+  @override
+  State<OrderEventsTable> createState() => OrderEventsTableState();
+}
+
+class OrderEventsTableState extends State<OrderEventsTable> {
+  @override
+  Widget build(BuildContext context) {
+    return Theme(
             data: Theme.of(context).copyWith(
               dividerColor: Colors.transparent,
               dividerTheme: const DividerThemeData(
@@ -127,7 +207,7 @@ class _EventOrdersState extends State<EventOrders> {
             margin: const EdgeInsets.only(left: 50,right: 50,bottom: 20,top: 10),
             padding: const EdgeInsets.all(10),
             decoration:BoxDecoration(
-              color: Colors.grey.shade600,
+              color: AppColor.secondaryColor(context),
               borderRadius: BorderRadius.circular(7)
             ),
               child: DataTable(
@@ -143,44 +223,39 @@ class _EventOrdersState extends State<EventOrders> {
                 dividerThickness: 0.0,
                 dataRowHeight: 70,
                 rows: List.generate(
-                  viewModel.myEvents.length,
+                  widget.events.length,
                   (index) => DataRow(onSelectChanged: (value) {
-                    context.read<DashboardViewModel>().getOrders(viewModel.myEvents[index].id);
-                    setState(() {
-                      selectedIndex = index;
-                    });
+                    context.read<DashboardViewModel>().getOrders(widget.events[index].id);
+                    context.go("/orders/tickets/${widget.events[index].id}");
                   },cells: [
                     DataCell(CachedNetworkImage(
-                        imageUrl: viewModel.myEvents[index].poster,
+                        imageUrl: widget.events[index].poster,
                         width: 60,
                         height: 50)),
                     DataCell(SizedBox(
                         width: 150,
                         child:
-                            Text(viewModel.myEvents[index].title, maxLines: 1))),
+                            Text(widget.events[index].title, maxLines: 1))),
                     DataCell(
-                      Text(viewModel.myEvents[index].fee),
+                      Text(widget.events[index].fee),
                     ),
-                    DataCell(Text(viewModel.myEvents[index].category)),
+                    DataCell(Text(widget.events[index].category)),
                   ]),
                 ),
               ),
             ),
-          ),
-      ],
-    );
+          );
   }
 }
 
-
 class TicketData extends StatelessWidget {
   const TicketData({
-    Key? key,
+    super.key,
     required this.username,
     required this.email,
     required this.number,
-    required this.avalable,
-  }) : super(key: key);
+    required this.avalable
+  });
   final String username;
   final String email;
   final String number;

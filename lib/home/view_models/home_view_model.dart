@@ -22,11 +22,11 @@ class HomeViewModel extends ChangeNotifier {
 
   getTop10Event()async{
     setLoading(true);
-    final responce = await HomeService.getTop10Event();
-    if(responce is List<EventModel>)
-    {
+    final responce = await HomeService.getTopRandomEvents();
+    // if(responce is List<EventModel>)
+    // {
       setEventModel(responce);
-    }
+    // }
     setLoading(false);
   }
 }

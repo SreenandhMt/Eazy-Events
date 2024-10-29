@@ -9,22 +9,39 @@ import 'package:toastification/toastification.dart';
 import '../../core/colors.dart';
 import 'ticket_register.dart';
 
-class RegisterButton extends StatefulWidget {
-  const RegisterButton({
+class RegisterButtonForDesktop extends StatefulWidget {
+  const RegisterButtonForDesktop({
     super.key,
     required this.height,
-    required this.fee,
-    required this.eventID,
-    required this.createrID,
-    required this.stock,
     required this.eventModel,
   });
   final double height;
-  final String fee;
-  final String eventID;
-  final String createrID;
-  final String stock;
   final EventModel eventModel;
+  @override
+  State<RegisterButtonForDesktop> createState() => _RegisterButtonForDesktopState();
+}
+
+class _RegisterButtonForDesktopState extends State<RegisterButtonForDesktop> {
+  @override
+  Widget build(BuildContext context) {
+    return StickyHeader(
+        header: RegisterButton(eventModel: widget.eventModel),
+        content: Container(
+          alignment: Alignment.topCenter,
+          height: widget.height,
+          // color: Colors.black,
+        ),
+      );
+  }
+}
+
+class RegisterButton extends StatefulWidget {
+  const RegisterButton({
+    super.key,
+    required this.eventModel,
+  });
+  final EventModel eventModel;
+
   @override
   State<RegisterButton> createState() => _RegisterButtonState();
 }
@@ -32,8 +49,7 @@ class RegisterButton extends StatefulWidget {
 class _RegisterButtonState extends State<RegisterButton> {
   @override
   Widget build(BuildContext context) {
-    return StickyHeader(
-        header: Container(
+    return Container(
           margin: const EdgeInsets.all(10),
           alignment: Alignment.topCenter,
           decoration: BoxDecoration(color: AppColor.secondaryColor(context),borderRadius: BorderRadius.circular(10)),
@@ -44,12 +60,12 @@ class _RegisterButtonState extends State<RegisterButton> {
               children: [
                 Padding(
                   padding: const EdgeInsets.all(10),
-                  child: Text(int.parse(widget.stock)<=0?"No Stock":widget.fee=="0"?"Free":"Rs ${widget.fee}",style: GoogleFonts.fredoka(fontSize: 16)),
+                  child: Text(int.parse(widget.eventModel.stock)<=0?"No Stock":widget.eventModel.fee=="0"?"Free":"Rs ${widget.eventModel.fee}",style: GoogleFonts.fredoka(fontSize: 16)),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(10),
                   child: MaterialButton(onPressed: (){
-                    if(int.parse(widget.stock)<=0)return;
+                    if(int.parse(widget.eventModel.stock)<=0)return;
                     if(FirebaseAuth.instance.currentUser==null)
                     {
                       toastification.show(
@@ -68,12 +84,6 @@ class _RegisterButtonState extends State<RegisterButton> {
               ],
             ),
           ),
-        ),
-        content: Container(
-          alignment: Alignment.topCenter,
-          height: widget.height,
-          // color: Colors.black,
-        ),
-      );
+        );
   }
 }

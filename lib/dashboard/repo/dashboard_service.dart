@@ -11,9 +11,9 @@ FirebaseFirestore _firestore = FirebaseFirestore.instance;
 FirebaseAuth _auth = FirebaseAuth.instance;
 
 class DashboardService {
-  static Future<Object> addEvent(Map<String, dynamic> map)async{
+  static Future<Object> deleteEvent(String eventID)async{
    try {
-     await _firestore.collection("events").doc(map['id']).set(map);
+     await _firestore.collection("events").doc(eventID).delete();
      return "success";
    } catch (e) {
      return e.toString();

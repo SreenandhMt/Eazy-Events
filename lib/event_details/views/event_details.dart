@@ -1,7 +1,10 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:event_manager/components/event_details/event_details_desktop_view.dart';
 import 'package:event_manager/components/event_details/event_details_mobile_view.dart';
+import 'package:event_manager/components/event_details/register_button.dart';
 import 'package:event_manager/components/event_details/ticket_register.dart';
+import 'package:event_manager/utils/loading_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -49,37 +52,33 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
   Widget build(BuildContext context) {
     Size screenSize = MediaQuery.of(context).size;
     EventViewModel eventViewModel = context.watch<EventViewModel>();
-    if(eventViewModel.loading)
-    {
-      return const Center(child: CircularProgressIndicator());
-    }
-    if(eventViewModel.eventModel==null)
-    {
-      WidgetsBinding.instance.addPostFrameCallback((_) =>context.read<EventViewModel>().reLoadData(widget.eventID));
-      
-      return const SizedBox();
-    }
-    if(eventViewModel.userModel==null)
-    {
-       WidgetsBinding.instance.addPostFrameCallback((timeStamp) =>context.read<EventViewModel>().getUser(eventViewModel.eventModel!.createrid));
-      return const Center(child: CircularProgressIndicator(color: Colors.red,));
-    }
+
+    // checking event data and loading
+    final responce = checkDataStatus(eventViewModel);
+    if(responce is Widget)return responce;
+
+    //main page
     return Scaffold(
-      appBar: screenSize.width<=1000?AppBar():null,
+      //mobile appbar
+      appBar: screenSize.width<=1000?customAppBar(screenSize,context):null,
       body: Column(
         children: [
           Expanded(
             child: ListView(
               children: [
+                // desktop appbar
                 if(screenSize.width>=1000)
                 customAppBar(screenSize,context),
-                Container(
-                  margin: const EdgeInsets.all(20),
-                  width: double.infinity,height: 400,decoration: BoxDecoration(
+                //banner
+                CachedNetworkImage(imageUrl: eventViewModel.eventModel!.poster,imageBuilder: (context, imageProvider) => Container(
+                  margin: EdgeInsets.only(top: 10,bottom: 10,left:screenSize.width>=1000? 100:10,right:screenSize.width>=1000? 100:10),
+                  height:screenSize.width>=1000? 450:250,
+                  decoration: BoxDecoration(
                   color: Colors.grey,
-                  borderRadius: BorderRadius.circular(9),
-                  image:eventViewModel.eventModel!.poster.isEmpty?null: DecorationImage(image: NetworkImage(eventViewModel.eventModel!.poster),fit: BoxFit.cover)
-                ),),
+                  borderRadius: BorderRadius.circular(5),
+                  image:DecorationImage(image: imageProvider,fit: BoxFit.cover)
+                ),),),
+                // main widgets
                 if(screenSize.width>=1000)
                 const EventDetailsDesktopView()
                 else
@@ -87,45 +86,31 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
               ],
             ),
           ),
-          if(screenSize.width<=1000)
-          Container(
-          margin: const EdgeInsets.all(10),
-          alignment: Alignment.topCenter,
-          decoration: BoxDecoration(color: AppColor.secondaryColor(context),borderRadius: BorderRadius.circular(10)),
-          padding: const EdgeInsets.all(5),
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: Text(int.parse(eventViewModel.eventModel!.stock)<=0?"No Stock":eventViewModel.eventModel!.fee=="0"?"Free":"Rs.${eventViewModel.eventModel!.fee}",style: GoogleFonts.fredoka(fontSize: 16)),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: MaterialButton(onPressed: (){
-                    if(int.parse(eventViewModel.eventModel!.stock)<=0)return;
-                    if(FirebaseAuth.instance.currentUser==null)
-                    {
-                      toastification.show(
-                              title: Text("You are not logged"),
-                              style: ToastificationStyle.fillColored,
-                              type: ToastificationType.error,
-                              autoCloseDuration: const Duration(seconds: 4),
-                              animationDuration:
-                                  const Duration(milliseconds: 200),
-                            );
-                      return;
-                    }
-                    showDialog(context: context, builder: (context) => Dialog(child: CheckoutPage(eventModel: eventViewModel.eventModel!),),);
-                  },minWidth: double.infinity,height: 50,padding: const EdgeInsets.all(10),color: AppColor.primaryColor,child: Text("Get Ticket",style: GoogleFonts.aBeeZee(),),),
-                )
-              ],
-            ),
-          ),
-        )
+          //mobile registraction button
+          if(screenSize.width<=1000&&eventViewModel.eventModel!=null)
+          RegisterButton(eventModel: eventViewModel.eventModel!)
         ],
       ),
     );
+  }
+
+  Widget? checkDataStatus(eventViewModel)
+  {
+    if(eventViewModel.loading)
+    {
+      return const LoadingScreen();
+    }
+    if(eventViewModel.eventModel==null)
+    {
+      WidgetsBinding.instance.addPostFrameCallback((_) =>context.read<EventViewModel>().reLoadData(widget.eventID));
+      
+      return const LoadingScreen();
+    }
+    if(eventViewModel.userModel==null)
+    {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) =>context.read<EventViewModel>().getUser(eventViewModel.eventModel!.createrid));
+      return const LoadingScreen();
+    }
+    return null;
   }
 }
