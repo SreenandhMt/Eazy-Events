@@ -47,7 +47,6 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    //TODO hide key
     apiKey: 'AIzaSyDg7sfzotg7pW2SwX-1Vkf28TXE2zLHW78',
     appId: '1:142325051586:web:7c5e35ab722d9680bc4b5b',
     messagingSenderId: '142325051586',

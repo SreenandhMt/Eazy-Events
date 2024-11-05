@@ -35,20 +35,30 @@ dependencies:
   intl: ^0.17.0
   ticket_widget: ^1.0.2
   share_plus: ^10.0.3
-  js: ^0.7.1
   flutter_stripe: ^11.2.0
   flutter_stripe_web: ^6.2.0
   http: ^1.2.2
   cached_network_image: ^3.4.1
-  flutter_dotenv: ^5.2.1
   fl_chart: ^0.69.0
   url_launcher: ^6.3.1
+  connectivity_plus: ^6.1.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
   flutter_lints: ^3.0.0
+  flutter_launcher_icons: ^0.14.1
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  image_path: "assets/icon/icon.png"
+  min_sdk_android: 21
+  web:
+    generate: true
+    image_path: "assets/icon/icon.png"
+    background_color: "#hexcode"
+    theme_color: "#hexcode"
 
 flutter:
 
@@ -58,7 +68,6 @@ flutter:
     - assets/
     - assets/dark/
     - assets/light/
-    - .env
     
   # example:
   # fonts:
