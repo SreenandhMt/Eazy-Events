@@ -1,6 +1,7 @@
 import 'package:event_manager/category_list/view_models/category_view_models.dart';
 import 'package:event_manager/core/theme.dart';
 import 'package:event_manager/dashboard/view_models/dashboard_view_model.dart';
+import 'package:event_manager/env/env.dart';
 import 'package:event_manager/event_details/view_models/event_view_model.dart';
 import 'package:event_manager/search/view_model/search_view_model.dart';
 import 'package:event_manager/firebase_options.dart';
@@ -10,29 +11,28 @@ import 'package:event_manager/utils/network_connection.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-// import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:provider/provider.dart';
 import 'package:toastification/toastification.dart';
 
 import 'auth/view_models/auth_view_model.dart';
 import 'home/view_models/home_view_model.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'page_route.dart';
 
-final PAYMENT_API_KEY = 'sk_test_51PhnltKfAbZCIGAymrPA1Z12Iq9RLsbs8DBIzmCxbepLJFCpw3pqn8LmI1EaijAQw3mG5x4rRr3Cdnrrp94dnpvZ00GE00d0Zq';
-final PAYMENT_API_PUBLISHABLE_KEY = 'pk_test_51PhnltKfAbZCIGAyMIANyBlpFLqnqTVe7GVe3mAEantqP8pRNRibBueekUGuJXOkUdcH8R7dGzsMmdjoWDSS4wWm005dEbUMnE';
-final PAYMENT_API_URL = 'https://api.stripe.com/v1/payment_intents';
 
 Future<void> main() async{
-  WidgetsFlutterBinding.ensureInitialized();
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  FlutterNativeSplash.remove();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
   NetworkConnection.initializeNetWorkConnection();
-  // await dotenv.load(fileName: ".env");
-  Stripe.publishableKey = PAYMENT_API_PUBLISHABLE_KEY;
+  Stripe.publishableKey = Env.publishableKey;
   runApp(const MyApp());
 }
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -57,7 +57,7 @@ class MyApp extends StatelessWidget {
             builder: (context, snapshot) {
               return MaterialApp.router(
                 debugShowCheckedModeBanner: false,
-                title: "(❁´◡`❁) Eazy To Book",
+                title: "Eazy Events",
                 darkTheme: AppTheme.darkTheme,
                 theme: AppTheme.lightTheme,
                 routerConfig: PageRouteGoRouter.goRouter(snapshot.hasData),

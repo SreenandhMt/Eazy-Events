@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:event_manager/components/event_details/event_details_desktop_view.dart';
 import 'package:event_manager/components/event_details/event_details_mobile_view.dart';
 import 'package:event_manager/components/event_details/register_button.dart';
-import 'package:event_manager/components/event_details/ticket_register.dart';
+import 'package:event_manager/event_details/views/ticket_register.dart';
 import 'package:event_manager/utils/loading_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';

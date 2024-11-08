@@ -1,28 +1,40 @@
 import 'dart:convert';
-
+import 'package:event_manager/env/env.dart';
 import 'package:event_manager/payment/models/payment_model.dart';
-// import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_stripe_web/flutter_stripe_web.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'platform_impl/imp.dart';
 
-import '../../main.dart';
 
 class PaymentService {
+  
+  static Future<Object?> pay(BuildContext context,String clientSecret,String amount,List<dynamic> productItems,unmounte) async {
+    try {
+      if(kIsWeb)
+      {
+        return PaymentImpl().pay(context, clientSecret, amount, productItems);
+      }else{
+        return PaymentImpl().pay(context, clientSecret, amount, productItems);
+      }
+    } catch (e) {
+      return PaymentFailure(errorMessage: "Payment faild: ${e.toString()}", code: "Unnkown");
+    }
+  }
   static Future<String?> createPaymentIntent(String amount,String currency) async {
     try {
-      final url = Uri.parse(PAYMENT_API_URL);
+      final url = Uri.parse(Env.paymentIntentUrl);
       final response = await http.post(
         url,
         headers: {
-          "Authorization": "Bearer ${PAYMENT_API_KEY}",
+          "Authorization": "Bearer ${Env.apikey}",
           "Content-Type": 'application/x-www-form-urlencoded'
         },
         body: {
-          'amount': amount,
-          'currency': 'usd',
+          'amount': (int.parse(amount)*100).round().toString(),
+          'currency': 'inr',
         },
       );
-
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
           return data['client_secret'];
@@ -33,27 +45,6 @@ class PaymentService {
     } catch (e) {
       return null;
       //  throw Exception('Error creating payment intent: ${e.toString()}');
-    }
-  }
-  static Future<Object> pay(String amount,String currency,String clientSecret) async {
-    try {
-      // if(clientSecret==null)return PaymentFailure(errorMessage: "Failed to create payment intent", code: "109");
-          final paymentResult = await WebStripe.instance.confirmPaymentElement(
-            const ConfirmPaymentElementOptions(
-              redirect: PaymentConfirmationRedirect.ifRequired,
-              confirmParams: ConfirmPaymentParams(
-                return_url: "",
-              ),
-            ),
-          );
-
-          if (paymentResult.status == PaymentIntentsStatus.Succeeded) {
-            return PaymentSuccess(amount: amount, currency: currency);
-          }else{
-            return PaymentFailure(errorMessage: "Payment faild", code: "110");
-          }
-    } catch (e) {
-      return PaymentFailure(errorMessage: "Payment faild: ${e.toString()}", code: "Unnkown");
     }
   }
 }

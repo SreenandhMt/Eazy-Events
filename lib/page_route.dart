@@ -4,6 +4,7 @@ import 'package:event_manager/core/constants.dart';
 import 'package:event_manager/dashboard/views/event_category.dart';
 import 'package:event_manager/dashboard/views/event_creating.dart';
 import 'package:event_manager/dashboard/views/orders.dart';
+import 'package:event_manager/utils/splash_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -16,7 +17,7 @@ import '/search/views/event_list.dart';
 import '/home/views/home_page.dart';
 import '/tickets/views/ticket_page.dart';
 
-import 'dart:html' as html;
+// import 'dart:html' as html;
 
 
 class PageRouteGoRouter {
@@ -30,6 +31,7 @@ class PageRouteGoRouter {
     return DashboardPage(shell: navigationShell);
   },
   branches: [
+    
     StatefulShellBranch(
               navigatorKey: navigatorKey,
               routes: [
@@ -188,12 +190,12 @@ class GoRouterObserver extends NavigatorObserver {
   }
 
   void _setTitle(String title) {
-    if (WidgetsBinding.instance != null) {
-      WidgetsBinding.instance!.addPostFrameCallback((_) {
-        if (kIsWeb) {
-          html.document.title = title;
-        }
-      });
-    }
+    // if (WidgetsBinding.instance != null) {
+    //   WidgetsBinding.instance!.addPostFrameCallback((_) {
+    //     if (kIsWeb) {
+    //       html.document.title = title;
+    //     }
+    //   });
+    // }
   }
 }

@@ -7,7 +7,7 @@ import 'package:event_manager/home/models/event_model.dart';
 import 'package:toastification/toastification.dart';
 
 import '../../core/colors.dart';
-import 'ticket_register.dart';
+import '../../event_details/views/ticket_register.dart';
 
 class RegisterButtonForDesktop extends StatefulWidget {
   const RegisterButtonForDesktop({

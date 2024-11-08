@@ -84,7 +84,7 @@ class _SigninMobileViewState extends State<SigninMobileView> {
                         context.read<AuthViewModel>().setPage(true);
                       },
                       child: const Text(
-                        "login",
+                        "SignIn",
                         style: TextStyle(color: Colors.blue),
                       )),
                 ],

@@ -123,7 +123,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                       },
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter your email';
+                          return 'Please enter your phone number';
                         }
                         return null;
                       },

@@ -39,7 +39,7 @@ class _LoginMobileViewState extends State<LoginMobileView> {
                     MaterialButton(onPressed: (){
                       if(!widget.formKey.currentState!.validate())return;
                       context.read<AuthViewModel>().signinAccount(email: email.text,password: password.text);
-                    },minWidth: size.width*0.705,height: 55,color: AppColor.primaryColor,child:authViewModel.loading? const CircularProgressIndicator(): const Text("Create account",style: TextStyle(color: Colors.white),),),
+                    },minWidth: size.width*0.705,height: 55,color: AppColor.primaryColor,child:authViewModel.loading? const CircularProgressIndicator(): const Text("SignIn",style: TextStyle(color: Colors.white),),),
                     height15,
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -49,7 +49,7 @@ class _LoginMobileViewState extends State<LoginMobileView> {
                       GestureDetector(onTap: () {
                         
                         context.read<AuthViewModel>().setPage(false);
-                      },child: const Text("signIn",style: TextStyle(color: Colors.blue),)),
+                      },child: const Text("signUp",style: TextStyle(color: Colors.blue),)),
                     ],)
                   ],
                 ),

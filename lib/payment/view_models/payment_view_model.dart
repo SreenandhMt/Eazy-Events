@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:toastification/toastification.dart';
 
 import '/event_details/view_models/event_view_model.dart';
@@ -31,16 +30,11 @@ class PaymentViewModel extends ChangeNotifier{
   {
     setLoading(true);
     _paymentAmount = amount;
-    final response = await PaymentService.createPaymentIntent(amount, "INR");
-    if(response is String)
-    {
-      _clientSecret = response;
-    }else{
-      _paymentAmount = null;
-      _clientSecret = null;
+    final ss = await PaymentService.createPaymentIntent(amount, "INR");
+    if (ss is String) {
+      _clientSecret = ss;
     }
     setLoading(false);
-
   }
 
   setLoading(bool loading)async{
@@ -52,17 +46,21 @@ class PaymentViewModel extends ChangeNotifier{
     notifyListeners();
   }
 
-  pay(BuildContext context,{required String eventID,required String stock,required String createrID,required String phoneNumber,required String name})async
+  pay(BuildContext context,unmounte,String price,{required String eventID,required String stock,required String createrID,required String phoneNumber,required String name,required String title})async
   {
     setPaymentLoading(true);
-    if(paymentAmount==null||_clientSecret==null)
-    {
-      setPaymentStatus(null, PaymentFailure(errorMessage: "Dont Refresh the page", code: "100"));
-      context.pop();
-      setLoading(false);
-      return;
+      final ss = await PaymentService.createPaymentIntent(price, "INR");
+      if (ss is String) {
+        _clientSecret = ss;
     }
-    final response = await PaymentService.pay(paymentAmount!, "INR",_clientSecret!);
+    final response = await PaymentService.pay(
+        context,
+        _clientSecret!,
+        price,
+        [
+          {"productPrice": price, "productName": title, "qty": 1},
+        ],
+        unmounte);
     if(response is PaymentSuccess)
     {
       EventViewModel eventViewModel = EventViewModel();

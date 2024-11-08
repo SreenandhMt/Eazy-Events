@@ -91,7 +91,7 @@ class _SigninDesktopViewState extends State<SigninDesktopView> {
                             context.read<AuthViewModel>().setPage(true);
                           },
                           child: const Text(
-                            "login",
+                            "SignIn",
                             style: TextStyle(color: Colors.blue),
                           )),
                     ],
