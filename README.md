@@ -2,8 +2,6 @@
 
 **Eazy Event** is a personal project that I developed to create a seamless platform for managing events. It’s designed to make event organization intuitive and straightforward, supporting both in-person and online events with ease.
 
-[Check out the live web app here!](https://shout-60c7f.web.app)
-
 ## Features
 
 - **Effortless Event Management**: Create, update, and categorize events, all in one platform.
